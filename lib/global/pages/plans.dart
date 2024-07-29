@@ -19,8 +19,12 @@ class Plans extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
             decoration: BoxDecoration(
-              color: context.theme.colorScheme.secondary,
+              color: context.theme.colorScheme.tertiary,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text("${controller.currentPage.value + 1}/3"),

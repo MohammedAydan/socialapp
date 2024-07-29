@@ -305,9 +305,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   //updateUserStatus
   @override
-  Future<Either<Failure, Unit>> updateUserStatus(bool status) async {
+  Future<Either<Failure, Unit>> updateUserStatus(
+    bool status, {
+    String? uid,
+  }) async {
     try {
-      final userId = supabase.auth.currentUser?.id;
+      final userId = uid ?? supabase.auth.currentUser?.id;
       if (userId == null) {
         return Left(ServerFailure());
       }

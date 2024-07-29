@@ -35,8 +35,11 @@ class AuthController extends GetxController {
     try {
       error("");
       showLoading();
-      final res =
-          await authRepository.signInWithEmailAndPassword(email, password);
+      final res = await authRepository.signInWithEmailAndPassword(
+        email,
+        password,
+      );
+
       res.fold(
         (l) {
           Get.back();
@@ -45,7 +48,7 @@ class AuthController extends GetxController {
         (r) {
           user.value = r;
           Get.back();
-          _updateUserStatus(true);
+          _updateUserStatus(true, uid: r.userId);
           Get.offAllNamed(MainLayout.routeName);
         },
       );
@@ -88,7 +91,7 @@ class AuthController extends GetxController {
         (r) {
           user.value = r;
           Get.back();
-          _updateUserStatus(true);
+          _updateUserStatus(true, uid: r.userId);
           Get.offAllNamed(MainLayout.routeName);
         },
       );
@@ -102,10 +105,10 @@ class AuthController extends GetxController {
     try {
       error("");
       showLoading();
+      _updateUserStatus(true);
       final res = await authRepository.signOut();
       if (res.isRight()) {
         Get.back();
-          _updateUserStatus(false);
         Get.offAllNamed(SignoutScreen.routeName);
       } else {
         Get.back();
@@ -130,6 +133,7 @@ class AuthController extends GetxController {
               (failure) => _navigateToLoginScreen(),
               (fetchedUser) {
                 _setUser(fetchedUser);
+                _updateUserStatus(true, uid: fetchedUser.userId);
                 Get.offAllNamed(MainLayout.routeName);
               },
             );
@@ -270,15 +274,14 @@ class AuthController extends GetxController {
     );
   }
 
-  void _updateUserStatus(bool isOnline) {
+  void _updateUserStatus(bool isOnline, {String? uid}) {
     // Use Future.microtask for non-blocking execution
     Future.microtask(() async {
       try {
-        await authRepository.updateUserStatus(isOnline);
+        await authRepository.updateUserStatus(isOnline, uid: uid);
       } catch (e) {
         print("Error updating user status: $e");
       }
     });
   }
 }
-

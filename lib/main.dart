@@ -15,6 +15,13 @@ import 'package:socialapp/features/settings/controllers/settings_controller.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:socialapp/local.notifications.dart';
 
+/*
+  create file for /common/string.dart
+  add key SUPABASE_URL
+  add key SUPABASE_KEY
+  add key ONESIGNAL_KEY
+*/
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();

@@ -16,11 +16,12 @@ class PlanPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(40),
+      margin: const EdgeInsets.only(top: 70),
+      padding: const EdgeInsets.all(20),
       child: Center(
         child: Container(
-          width: 400,
-          height: 500,
+          width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             color: context.theme.colorScheme.tertiary,
             borderRadius: BorderRadius.circular(20),
@@ -67,7 +68,14 @@ class PlanPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Center(
+              Container(
+                alignment: Alignment.center,
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: context.theme.scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Text(
                   "${planModel.price}\$",
                   style: TextStyle(
@@ -75,7 +83,7 @@ class PlanPage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(height: 20),
               planModel.free == true
                   ? const CustomPrimaryButton(text: "Free")
                   : payButton != null
@@ -99,8 +107,16 @@ class PlanPage extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
           ),
           status
-              ? const Icon(Icons.verified_rounded, color: Colors.blueAccent)
-              : Icon(Icons.close_rounded, color: Get.theme.colorScheme.primary)
+              ? const Icon(
+                  Icons.verified_rounded,
+                  color: Colors.blueAccent,
+                  size: 18,
+                )
+              : Icon(
+                  Icons.close_rounded,
+                  color: Get.theme.colorScheme.primary,
+                  size: 18,
+                )
         ],
       ),
     );

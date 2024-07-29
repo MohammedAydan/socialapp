@@ -25,5 +25,7 @@ abstract class AuthRepository {
     int? limit = 20,
   });
   //updateUserStatus
-  Future<Either<Failure, Unit>> updateUserStatus(bool status);
+  Future<Either<Failure, Unit>> updateUserStatus(bool status,{
+    String? uid,
+  });
 }

@@ -36,13 +36,13 @@ class PlansController extends GetxController {
       print(res);
 
       final updateData = {
-        "subscription_start_date": now,
-        "subscription_end_date": subscriptionEndDate,
-        "subscribe_data": result.toJson(),
+        "subscription_start_date": now.toString(),
+        "subscription_end_date": subscriptionEndDate.toString(),
+        "subscribe_data": res,
       };
 
       if (currentPage.value == 1) {
-        await supabase.from("users").update({
+        await supabase.from("users_data").update({
           ...updateData,
           "free_plan": false,
           "basic_plan": true,
@@ -59,7 +59,7 @@ class PlansController extends GetxController {
             ..subscribeData = result,
         );
       } else if (currentPage.value == 2) {
-        await supabase.from("users").update({
+        await supabase.from("users_data").update({
           ...updateData,
           "free_plan": false,
           "basic_plan": false,
@@ -79,6 +79,7 @@ class PlansController extends GetxController {
     } catch (e) {
       print("Payment Result Error: $e");
     } finally {
+      Get.back();
       Get.back();
       Get.back();
     }
