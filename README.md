@@ -39,21 +39,29 @@ Ensure you have the following installed on your machine:
 
 ## Project Structure
 
-    ├── android                # Android-specific files
-    ├── ios                    # iOS-specific files
-    ├── lib                    # Main Dart codebase
-    │   ├── main.dart          # Entry point of the app
-    │   ├── local.notifications.dart  # Local notifications configuration
+    ├── android                          # Android-specific files
+    ├── ios                              # iOS-specific files
+    ├── lib                              # Main Dart codebase
+    │   ├── main.dart                    # Entry point of the app
+    │   ├── local_notifications.dart     # Local notifications configuration
     │   ├── onesignal_notification.dart  # OneSignal notification configuration
-    │   ├── api                # API-related files
-    │   ├── common             # Common resources
-    │   ├── core               # Core functionality
-    │   ├── di                 # Dependency Injection
+    │   ├── api                          # API-related files
+    │   ├── common                       # Common resources
+    │   ├── core                         # Core functionality
+    │   ├── di                           # Dependency Injection
     │   │   └── di.dart
-    │   ├── features           # Features of the app
-    │   ├── global
-    │   ├── widgets            # Custom widgets
-    ├── pubspec.yaml           # Project dependencies and assets
+    │   ├── features                     # Features of the app
+    │   │   └── auth                     # Authentication feature
+    │   │       ├── controllers          # Authentication controllers
+    │   │       ├── models               # Authentication models
+    │   │       ├── pages                # Authentication pages
+    │   │       └── services             # Authentication services
+    │   │           ├── repositories     # Service repositories
+    │   │           └── implementation   # Service implementations
+    │   ├── global                       # Global screens
+    │   ├── widgets                      # Custom widgets
+    ├── pubspec.yaml                     # Project dependencies and assets
+
   <!--   └── README.md              # Project documentation -->
 
 ## Useful Resources
