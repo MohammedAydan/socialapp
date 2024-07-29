@@ -1,4 +1,4 @@
-import 'package:socialapp/global/pages/models/pay_result.dart';
+import 'package:socialapp/global/models/pay_result.dart';
 
 class UserModel {
   String? id;

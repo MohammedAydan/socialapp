@@ -48,36 +48,7 @@ class BannerAdWidget extends StatelessWidget {
             : const SizedBox();
       }
 
-      return !controller.hideAd.value
-          ? Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                color: context.theme.colorScheme.tertiary,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          controller.hideAd(true);
-                        },
-                        icon: const Icon(Icons.close_rounded),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 10),
-                    width: double.infinity,
-                    // height: 60, // Height of the BannerAd
-                    // child: const Center(child: CircularProgressIndicator()),
-                  ),
-                ],
-              ),
-            )
-          : const SizedBox();
+      return const SizedBox();
     });
   }
 }

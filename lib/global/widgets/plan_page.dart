@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:socialapp/global/pages/models/plan_model.dart';
+import 'package:socialapp/global/models/plan_model.dart';
 import 'package:socialapp/widgets/custom_primary_button.dart';
 
 class PlanPage extends StatelessWidget {
@@ -66,6 +66,16 @@ class PlanPage extends StatelessWidget {
                   },
                 ),
               ),
+              const SizedBox(width: 10),
+              Center(
+                child: Text(
+                  "${planModel.price}\$",
+                  style: TextStyle(
+                    color: Get.theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
               planModel.free == true
                   ? const CustomPrimaryButton(text: "Free")
                   : payButton != null
