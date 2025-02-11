@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:socialapp/features/posts/controllers/post_controller.dart';
 import 'package:socialapp/features/posts/models/post_model.dart';
 import 'package:socialapp/widgets/error_card.dart';
+import 'package:socialapp/widgets/post_widgets/get_html_or_markdown_widget.dart';
 
 import 'copy_text.dart';
 
@@ -34,6 +35,10 @@ class PostBody extends StatelessWidget {
           return const SizedBox();
         }, controller.error),
         Obx(() {
+          // return getHtmlOrMarkdownWidget(
+          //   post.body,
+          //   controller,
+          // );
           if (controller.showFullPost.isTrue) {
             return InkWell(
               onTap: () {

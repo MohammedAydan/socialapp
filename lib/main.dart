@@ -1,4 +1,6 @@
 // DEV: Mohammed Aydan
+import 'package:cloudinary_url_gen/cloudinary.dart';
+import 'package:cloudinary_url_gen/config/cloudinary_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -14,16 +16,34 @@ import 'package:socialapp/features/auth/pages/splash_screen.dart';
 import 'package:socialapp/features/settings/controllers/settings_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:socialapp/local.notifications.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /*
-  create file for /common/string.dart
-  add key SUPABASE_URL
-  add key SUPABASE_KEY
-  add key ONESIGNAL_KEY
+  please set .env file and set keys
+  # Supabase data
+  SUPABASE_URL=<DATA>
+  SUPABASE_KEY=<DATA>
+
+  # AdMob IDs
+  ANDROID_ADMOB_BANNER_ID=<DATA>
+  IOS_ADMOB_BANNER_ID=<DATA>
+  ANDROID_ADMOB_NATIVE_ID=<DATA>
+  IOS_ADMOB_NATIVE_ID=<DATA>
+  ANDROID_ADMOB_INTERSTITIAL_ID=<DATA>
+  IOS_ADMOB_INTERSTITIAL_ID=<DATA>
+
+  # OneSignal App ID
+  ONESIGNAL_APP_ID=<DATA>
+
+  # Cloudinary data
+  CLOUDINARY_CLOUD_NAME=<DATA>
+  CLOUDINARY_API_KEY=<DATA>
+  CLOUDINARY_API_SECRET=<DATA>
 */
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   MobileAds.instance.initialize();
   OneSignal.Debug.setLogLevel(OSLogLevel.none);
   OneSignal.Debug.setAlertLevel(OSLogLevel.none);

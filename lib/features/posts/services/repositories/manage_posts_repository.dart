@@ -8,6 +8,10 @@ abstract class ManagePostsRepository {
     int page = 1,
     int limit = 10,
   });
+  Future<Either<Failure, List<PostModel>>> getPostsSuggested({
+    int page = 1,
+    int limit = 10,
+  });
   Future<Either<Failure, PostModel>> getPost(int id);
   Future<Either<Failure, List<PostModel>>> getPostsByUserId(
     String id, {

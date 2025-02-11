@@ -22,6 +22,8 @@ class AddMediaBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     String phoneNumber = "01153200999";
     return Container(
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
         color: context.theme.colorScheme.tertiary,
         borderRadius: BorderRadius.circular(50),
@@ -117,6 +119,7 @@ class AddMediaBtn extends StatelessWidget {
             icon: Icon(
               icon,
               color: context.theme.colorScheme.secondary,
+              size: 17,
             ),
           ),
           if (access == false)

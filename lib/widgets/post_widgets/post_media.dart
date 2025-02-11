@@ -7,6 +7,7 @@ import 'package:socialapp/widgets/audio_player_widget.dart';
 import 'package:socialapp/widgets/custom_image.dart';
 import 'package:socialapp/widgets/file_widget.dart';
 import 'package:socialapp/widgets/video_player_widget.dart';
+import 'package:socialapp/features/posts/pages/web_view.dart';
 
 class PostMedia extends StatelessWidget {
   const PostMedia({
@@ -20,6 +21,14 @@ class PostMedia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (post.mediaType == "embedded" &&
+        post.mediaUrl != null &&
+        post.mediaUrl!.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: buildVideoWidget(post.mediaUrl!),
+      );
+    }
     if (post.mediaType?.isNotEmpty == true) {
       if (post.mediaType!.contains("video") && post.mediaUrl != null) {
         return Column(
@@ -27,7 +36,7 @@ class PostMedia extends StatelessWidget {
             const SizedBox(height: 10),
             VideoPlayerWidget(
               controller: controller,
-              url: Uri.parse(post.mediaUrl!),
+              url: post.mediaUrl!,
             ),
           ],
         );

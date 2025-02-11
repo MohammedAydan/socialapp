@@ -1,4 +1,6 @@
-import 'package:appinio_video_player/appinio_video_player.dart';
+// import 'package:appinio_video_player/appinio_video_player.dart';
+// import 'package:video_player/video_player.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:get/get.dart';
 import 'package:socialapp/core/error/failure.dart';
 import 'package:socialapp/features/auth/controllers/auth_controller.dart';
@@ -8,8 +10,10 @@ import 'package:socialapp/features/posts/controllers/posts_controller.dart';
 import 'package:socialapp/features/posts/models/post_model.dart';
 import 'package:socialapp/features/posts/services/repositories/manage_posts_repository.dart';
 import 'package:socialapp/features/posts/services/repositories/post_repository.dart';
+import 'package:socialapp/local.notifications.dart';
 import 'package:socialapp/onesignal_notification.dart';
 import 'package:socialapp/widgets/loading.dart';
+import 'package:video_player/video_player.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 
 class PostController extends GetxController {
@@ -20,8 +24,7 @@ class PostController extends GetxController {
   final NotificationsController notificationsController;
   Rxn<PostModel> post = Rxn<PostModel>(null);
   RxBool showFullPost = false.obs;
-  final videoPlayerController = Rxn<VideoPlayerController>();
-  final customVideoPlayerController = Rxn<CustomVideoPlayerController>();
+  final flickManager = Rxn<FlickManager>();
   final voiceController = Rxn<VoiceController>();
   Rxn<PostModel> postShareing = Rxn<PostModel>(null);
   RxBool isLoading = true.obs;
@@ -160,17 +163,23 @@ class PostController extends GetxController {
     if (Get.context != null &&
         post.value?.mediaType != null &&
         post.value!.mediaType!.contains("video")) {
-      videoPlayerController.value = VideoPlayerController.network(
-        post.value?.mediaUrl ?? "",
-      )..initialize().then((_) {
-          videoPlayerController.refresh();
-          customVideoPlayerController.refresh();
-        });
-
-      customVideoPlayerController.value = CustomVideoPlayerController(
-        context: Get.context!,
-        videoPlayerController: videoPlayerController.value!,
+      flickManager.value = FlickManager(
+        videoPlayerController: VideoPlayerController.networkUrl(
+          Uri.parse(post.value?.mediaUrl ?? ""),
+        ),
       );
+
+      // videoPlayerController.value = CachedVideoPlayerController.network(
+      //   post.value?.mediaUrl ?? "",
+      // )..initialize().then((_) {
+      //     videoPlayerController.refresh();
+      //     customVideoPlayerController.refresh();
+      //   });
+
+      // customVideoPlayerController.value = CustomVideoPlayerController(
+      //   context: Get.context!,
+      //   videoPlayerController: videoPlayerController.value!,
+      // );
     }
     if (post.value?.mediaType != null &&
         post.value!.mediaType!.contains("audio")) {
@@ -196,8 +205,9 @@ class PostController extends GetxController {
 
   @override
   void dispose() {
-    customVideoPlayerController.value?.dispose();
-    videoPlayerController.value?.dispose();
+    voiceController.value?.dispose();
+    // customVideoPlayerController.value?.dispose();
+    flickManager.value?.dispose();
     super.dispose();
   }
 }

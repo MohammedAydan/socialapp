@@ -159,4 +159,7 @@ Map<String, String> en = {
   "pf4": "Share audios",
   "pf5": "Share files",
   "pf6": "Cancel ads",
+  "suggested_post": "Suggested Post",
+  "suggested": "Suggested",
+  "home": "Home",
 };

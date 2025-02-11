@@ -28,53 +28,64 @@ class PostActions extends StatelessWidget {
 
   Widget betaCode() {
     return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          InkWell(
-            onTap: () {
-              Get.toNamed(ShowLikesScreen.routeName, arguments: post.postId);
-            },
-            child: _buildActionItem(
-              controller.post.value?.likesCount.toInt() ?? 0,
-              FontAwesome.heart,
-              FontAwesome.heart_solid,
-              controller.post.value?.isLikes == true,
-              () {
-                controller.addOrRemoveLike();
-              },
+      () => SizedBox(
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Get.toNamed(ShowLikesScreen.routeName,
+                      arguments: post.postId);
+                },
+                child: _buildActionItem(
+                  controller.post.value?.likesCount.toInt() ?? 0,
+                  FontAwesome.heart,
+                  FontAwesome.heart_solid,
+                  controller.post.value?.isLikes == true,
+                  () {
+                    controller.addOrRemoveLike();
+                  },
+                ),
+              ),
             ),
-          ),
-          _buildActionItem(
-            controller.post.value?.commentsCount.toInt() ?? 0,
-            FontAwesome.comment_dots,
-            FontAwesome.comment_dots,
-            false,
-            () {
-              Get.toNamed(
-                ShowPostScreen.routeName,
-                arguments: post,
-              );
-            },
-          ),
-          InkWell(
-            onTap: () {
-              Get.toNamed(ShowShareingsScreen.routeName, arguments: post.postId);
-            },
-            child: _buildActionItem(
-              controller.post.value?.sharingsCount.toInt() ?? 0,
-              FontAwesome.share_solid,
-              FontAwesome.share_solid,
-              false,
-              () {
-                Get.toNamed(
-                  SharePostScreen.routeName,
-                  arguments: controller.post.value,
-                );
-              },
+            Expanded(
+              child: _buildActionItem(
+                controller.post.value?.commentsCount.toInt() ?? 0,
+                FontAwesome.comment_dots,
+                FontAwesome.comment_dots,
+                false,
+                () {
+                  Get.toNamed(
+                    ShowPostScreen.routeName,
+                    arguments: post,
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Get.toNamed(ShowShareingsScreen.routeName,
+                      arguments: post.postId);
+                },
+                child: _buildActionItem(
+                  controller.post.value?.sharingsCount.toInt() ?? 0,
+                  FontAwesome.share_solid,
+                  FontAwesome.share_solid,
+                  false,
+                  () {
+                    Get.toNamed(
+                      SharePostScreen.routeName,
+                      arguments: controller.post.value,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -149,13 +160,23 @@ class PostActions extends StatelessWidget {
             color: context.theme.colorScheme.secondary,
           ),
         ),
-        IconButton(
-          onPressed: onPressed,
-          icon: Icon(
-            isActive ? activeIcon : icon,
-            color: isActive
-                ? context.theme.colorScheme.primary
-                : context.theme.colorScheme.secondary,
+        Container(
+          margin: const EdgeInsets.all(5),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Get.isDarkMode
+                ? context.theme.colorScheme.secondary.withOpacity(0.03)
+                : context.theme.colorScheme.secondary.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: IconButton(
+            onPressed: onPressed,
+            icon: Icon(
+              isActive ? activeIcon : icon,
+              color: isActive
+                  ? context.theme.colorScheme.primary
+                  : context.theme.colorScheme.secondary,
+            ),
           ),
         ),
       ],

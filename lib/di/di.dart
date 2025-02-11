@@ -1,9 +1,13 @@
+import 'package:cloudinary_url_gen/cloudinary.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:socialapp/core/UploadMedia/upload_media.dart';
+import 'package:socialapp/core/UploadMedia/upload_media_impl.dart';
 import 'package:socialapp/core/imagePicker/image_picker.dart';
 import 'package:socialapp/core/network/network_info.dart';
 import 'package:socialapp/features/auth/controllers/auth_controller.dart';
@@ -35,6 +39,7 @@ import 'package:socialapp/features/settings/services/repositories/settings_repos
 import 'package:socialapp/features/user_profile/services/implementation/user_profile_repository_impl.dart';
 import 'package:socialapp/features/user_profile/services/repositories/user_profile_repository.dart';
 import 'package:socialapp/onesignal_notification.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final sl = GetIt.instance;
 
@@ -45,25 +50,43 @@ Future<void> init() async {
     ignoreSsl: true,
   );
 
+  // Cloudinary Config
+  sl.registerLazySingleton<Cloudinary>(
+    () => Cloudinary.fromCloudName(
+      cloudName: dotenv.env["CLOUDINARY_CLOUD_NAME"] ?? "",
+      apiKey: dotenv.env["CLOUDINARY_API_KEY"] ?? "",
+    )..config.urlConfig.secure = true,
+  );
+
   // External
   sl.registerLazySingleton(() => InternetConnection());
   sl.registerLazySingleton(() => GetStorage());
   sl.registerLazySingleton(() => ImagePicker());
+  sl.registerLazySingleton(() => Dio());
 
   // Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
   sl.registerLazySingleton(() => OneSignalNotificationsP());
 
   // Repositories
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl()));
-  sl.registerLazySingleton<ManagePostsRepository>(() => ManagePostsRepositoryImpl(sl(), sl()));
-  sl.registerLazySingleton<UserProfileRepository>(() => UserProfileRepositoryImpl(sl()));
-  sl.registerLazySingleton<SearchUsersRepository>(() => SearchUsersRepositoryImpl(sl()));
-  sl.registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<AuthRepository>(
+      () => AuthRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<ManagePostsRepository>(
+      () => ManagePostsRepositoryImpl(sl(), sl(), sl()));
+  sl.registerLazySingleton<UserProfileRepository>(
+      () => UserProfileRepositoryImpl(sl()));
+  sl.registerLazySingleton<SearchUsersRepository>(
+      () => SearchUsersRepositoryImpl(sl()));
+  sl.registerLazySingleton<SettingsRepository>(
+      () => SettingsRepositoryImpl(sl(), sl()));
   sl.registerLazySingleton<PostRepository>(() => PostRepositoryImpl(sl()));
-  sl.registerLazySingleton<NotificationsRepository>(() => NotificationsRepositoryImpl(sl(), sl()));
-  sl.registerLazySingleton<CommentsRepository>(() => CommentsRepositoryImpl(sl()));
-  sl.registerLazySingleton<ImagePickerRepository>(() => ImagePickerRepositoryImpl(sl()));
+  sl.registerLazySingleton<NotificationsRepository>(
+      () => NotificationsRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<CommentsRepository>(
+      () => CommentsRepositoryImpl(sl()));
+  sl.registerLazySingleton<ImagePickerRepository>(
+      () => ImagePickerRepositoryImpl(sl()));
+  sl.registerLazySingleton<UploadMedia>(() => UploadMediaImpl(dio: sl()));
 
   // Controllers
   Get.put(AuthController(sl(), sl()));
@@ -71,7 +94,7 @@ Future<void> init() async {
   Get.put(MainLayoutController(Get.find()));
 
   Get.lazyPut(() => ProfileController(Get.find(), sl(), sl()));
-  Get.lazyPut(() => PostsController(sl(), sl(), Get.find()));
+  Get.lazyPut(() => PostsController(sl(), sl(), Get.find(), sl(), sl()));
   Get.lazyPut(() => VideosPostsController(sl(), Get.find()));
   Get.lazyPut(() => SearchUsersController(sl()));
   Get.lazyPut(() => SettingsController(sl(), Get.find<AuthController>()));
@@ -79,4 +102,4 @@ Future<void> init() async {
   Get.lazyPut(() => FollowingsController(sl()), fenix: true);
   Get.lazyPut(() => LikesController(sl()), fenix: true);
   Get.lazyPut(() => ShareingsController(sl()), fenix: true);
-}  
+}

@@ -9,8 +9,8 @@ import 'package:socialapp/widgets/error_card_and_refresh_button.dart';
 import 'package:socialapp/widgets/loadings/post_loading.dart';
 import 'package:socialapp/widgets/post_widgets/post_card.dart';
 
-class ShowPostsAndAds extends StatelessWidget {
-  const ShowPostsAndAds({
+class ShowPostsSuggestedAndAds extends StatelessWidget {
+  const ShowPostsSuggestedAndAds({
     super.key,
     required this.controller,
     required this.maxWidth,
@@ -22,18 +22,20 @@ class ShowPostsAndAds extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.loadingPosts.value) {
+      if (controller.loadingPostsSuggested.value) {
         return ListView.builder(
           itemCount: 10,
           itemBuilder: (context, index) => const PostLoading(),
         );
       }
-      if (controller.posts.isEmpty && !controller.loadingPosts.value) {
+      if (controller.postsSuggested.isEmpty &&
+          !controller.loadingPostsSuggested.value) {
         return ErrorCardAndRefreshButton(
-          method: controller.getInitPosts,
+          method: controller.getInitPostsSuggested,
           message: "no_posts_found".tr,
         );
       }
+
       return ListView(
         controller: controller.scrollController,
         children: [
@@ -41,7 +43,7 @@ class ShowPostsAndAds extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: maxWidth != null ? const EdgeInsets.all(20) : null,
-            itemCount: _getTotalItemCount(controller.posts.length),
+            itemCount: _getTotalItemCount(controller.postsSuggested.length),
             itemBuilder: (context, index) {
               // Ad insertion logic
               if (_isBannerAdPosition(index)) {
@@ -53,11 +55,11 @@ class ShowPostsAndAds extends StatelessWidget {
               // Calculate post index
               int postIndex = _getPostIndex(index);
 
-              if (postIndex >= controller.posts.length) {
+              if (postIndex >= controller.postsSuggested.length) {
                 return const SizedBox.shrink();
               }
 
-              PostModel post = controller.posts[postIndex];
+              PostModel post = controller.postsSuggested[postIndex];
 
               return Center(
                 child: Container(
@@ -71,11 +73,11 @@ class ShowPostsAndAds extends StatelessWidget {
             },
           ),
           ObxValue((v) {
-            if (controller.loadingMorePosts.isTrue) {
+            if (controller.loadingMorePostsSuggested.isTrue) {
               return const PostLoading();
             }
             return const SizedBox();
-          }, controller.loadingMorePosts),
+          }, controller.loadingMorePostsSuggested),
         ],
       );
     });

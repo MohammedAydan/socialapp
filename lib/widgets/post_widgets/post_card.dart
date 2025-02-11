@@ -35,9 +35,12 @@ class PostCard extends StatelessWidget {
         }
       },
       child: Container(
-        color: context.theme.colorScheme.tertiary,
-        margin: const EdgeInsets.only(top: 8),
+        margin: const EdgeInsets.only(top: 5),
         padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.tertiary,
+          // borderRadius: BorderRadius.circular(30),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,6 +50,28 @@ class PostCard extends StatelessWidget {
               postController: controller,
               postSharing: postSharing!,
             ),
+            if (post.is_suggested == true)
+              Container(
+                margin: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  border: Border.symmetric(
+                    horizontal: BorderSide(
+                      color: context.theme.colorScheme.secondary,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    "suggested_post".tr,
+                    style: TextStyle(
+                      color: context.theme.colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             if (post.title?.isNotEmpty ?? false)
               PostTitle(post: post, controller: controller),
             if (post.body?.isNotEmpty ?? false)
