@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:socialapp/core/UploadMedia/upload_media.dart';
 import 'package:socialapp/core/error/failure.dart';
 import 'package:socialapp/core/network/network_info.dart';
 import 'package:socialapp/features/auth/models/user_model.dart';
@@ -10,8 +11,9 @@ import 'package:socialapp/main.dart';
 class ManagePostsRepositoryImpl implements ManagePostsRepository {
   final GetStorage storage;
   final NetworkInfo networkInfo;
+  final UploadMedia uploadMedia;
 
-  ManagePostsRepositoryImpl(this.storage, this.networkInfo);
+  ManagePostsRepositoryImpl(this.storage, this.networkInfo, this.uploadMedia);
 
   @override
   Future<Either<Failure, PostModel>> addPost(PostModel post) async {
@@ -66,9 +68,15 @@ class ManagePostsRepositoryImpl implements ManagePostsRepository {
       try {
         await supabase.from("posts").delete().eq("id", post.postId!);
         if (post.mediaUrl != null && post.mediaUrl!.isNotEmpty) {
-          await supabase.storage.from("media").remove(
-            [post.mediaUrl!.split("media/").last],
-          );
+          if (post.mediaUrl!.contains("cloudinary")) {
+            // Cloudinary Storage
+            await uploadMedia.deleteImageFromCloudinary(post.mediaUrl!);
+          } else {
+            // Supabase Storage
+            await supabase.storage.from("media").remove(
+              [post.mediaUrl!.split("media/").last],
+            );
+          }
         }
         await supabase.rpc("decrement_posts_count", params: {
           "p_user_id": post.userId,
@@ -113,6 +121,47 @@ class ManagePostsRepositoryImpl implements ManagePostsRepository {
       print(res);
       final post = PostModel.fromJson(res);
       return Right(post);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PostModel>>> getPostsSuggested({
+    int page = 1,
+    int limit = 10,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final int offset = (page - 1) * limit;
+
+        // new function "get_latest_posts_fun"
+        final res = await supabase.rpc("get_latest_posts_fun", params: {
+          "p_user_id": supabase.auth.currentUser?.id,
+          "p_limit": limit,
+          "p_offset": offset,
+        });
+
+        // final res = await supabase.rpc("getlatestposts", params: {
+        //   "p_user_id": supabase.auth.currentUser?.id,
+        //   "p_limit": limit,
+        //   "p_offset": offset,
+        // });
+
+        await storage.write("$page-${limit}_POSTS_KEY", res);
+
+        List<PostModel> posts = (res as List)
+            .map((json) => PostModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return Right(posts);
+      } catch (e) {
+        return Left(ServerFailure());
+      }
+    } else {
+      final res = await storage.read("$page-${limit}_POSTS_KEY");
+      List<PostModel> posts = (res as List)
+          .map((json) => PostModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+      return Right(posts);
     }
   }
 

@@ -25,6 +25,7 @@ class PostModel {
   DateTime? createdAt;
   bool? loading;
   bool? myNewPost;
+  bool? is_suggested;
 
   PostModel({
     this.postId,
@@ -53,6 +54,7 @@ class PostModel {
     this.createdAt,
     this.loading = false,
     this.myNewPost = false,
+    this.is_suggested = false,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -83,6 +85,7 @@ class PostModel {
       notificationUserId: json['notification_user_id'],
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       createdAt: DateTime.tryParse(json['created_at'] ?? ''),
+      is_suggested: json['is_suggested'] ?? false,
     );
   }
 
@@ -112,6 +115,7 @@ class PostModel {
       'notification_user_id': notificationUserId,
       'tags': tags,
       'created_at': createdAt?.toIso8601String(),
+      'is_suggested': is_suggested ?? false,
     };
   }
 }

@@ -42,6 +42,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-
 # lib folder
 /lib/common/strings.dart
+
+# dotenv
+.env
+.env.local
+.env.development
+.env.production

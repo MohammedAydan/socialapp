@@ -37,6 +37,38 @@ Ensure you have the following installed on your machine:
     flutter run
     ```
 
+### Set Keys
+
+Add the following keys to your environment variables or a configuration file:
+
+#### Supabase Data
+```sh
+SUPABASE_URL=<DATA>
+SUPABASE_KEY=<DATA>
+```
+
+#### AdMob IDs
+```sh
+ANDROID_ADMOB_BANNER_ID=<DATA>
+IOS_ADMOB_BANNER_ID=<DATA>
+ANDROID_ADMOB_NATIVE_ID=<DATA>
+IOS_ADMOB_NATIVE_ID=<DATA>
+ANDROID_ADMOB_INTERSTITIAL_ID=<DATA>
+IOS_ADMOB_INTERSTITIAL_ID=<DATA>
+```
+
+#### OneSignal App ID
+```sh
+ONESIGNAL_APP_ID=<DATA>
+```
+
+#### Cloudinary Data
+```sh
+CLOUDINARY_CLOUD_NAME=<DATA>
+CLOUDINARY_API_KEY=<DATA>
+CLOUDINARY_API_SECRET=<DATA>
+```
+
 ## Project Structure
 
     ├── android                          # Android-specific files

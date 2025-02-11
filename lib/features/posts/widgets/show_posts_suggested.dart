@@ -6,8 +6,8 @@ import 'package:socialapp/widgets/error_card_and_refresh_button.dart';
 import 'package:socialapp/widgets/loadings/post_loading.dart';
 import 'package:socialapp/widgets/post_widgets/post_card.dart';
 
-class ShowPosts extends StatelessWidget {
-  const ShowPosts({
+class ShowPostsSuggested extends StatelessWidget {
+  const ShowPostsSuggested({
     super.key,
     required this.controller,
     required this.maxWidth,
@@ -19,15 +19,16 @@ class ShowPosts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.loadingPosts.value) {
+      if (controller.loadingPostsSuggested.value) {
         return ListView.builder(
           itemCount: 10,
           itemBuilder: (context, index) => const PostLoading(),
         );
       }
-      if (controller.posts.isEmpty && !controller.loadingPosts.value) {
+      if (controller.postsSuggested.isEmpty &&
+          !controller.loadingPostsSuggested.value) {
         return ErrorCardAndRefreshButton(
-          method: controller.getInitPosts,
+          method: controller.getInitPostsSuggested,
           message: "no_posts_found".tr,
         );
       }
@@ -39,9 +40,9 @@ class ShowPosts extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: maxWidth != null ? const EdgeInsets.all(20) : null,
-            itemCount: controller.posts.length,
+            itemCount: controller.postsSuggested.length,
             itemBuilder: (context, i) {
-              PostModel post = controller.posts[i];
+              PostModel post = controller.postsSuggested[i];
 
               return Center(
                 child: Container(
@@ -55,11 +56,11 @@ class ShowPosts extends StatelessWidget {
             },
           ),
           ObxValue((v) {
-            if (controller.loadingMorePosts.isTrue) {
+            if (controller.loadingMorePostsSuggested.isTrue) {
               return const PostLoading();
             }
             return const SizedBox();
-          }, controller.loadingMorePosts),
+          }, controller.loadingMorePostsSuggested),
         ],
       );
     });

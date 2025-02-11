@@ -1,8 +1,10 @@
 import 'dart:io';
 
-import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 
 class FileVideoPlayerWidget extends StatelessWidget {
   const FileVideoPlayerWidget({
@@ -14,85 +16,74 @@ class FileVideoPlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FileVideoController controller = Get.put(
-      FileVideoController(path, context),
-    );
-    return SizedBox(
-      width: double.infinity,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Obx(
-            () => AspectRatio(
-              aspectRatio: controller
-                          .videoPlayerController.value?.value.isInitialized ??
-                      false
-                  ? controller.videoPlayerController.value!.value.aspectRatio
-                  : 16 / 9,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: controller
-                            .videoPlayerController.value?.value.isInitialized ??
-                        false
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: CustomVideoPlayer(
-                          customVideoPlayerController:
-                              controller.customVideoPlayerController.value!,
-                        ),
-                      )
-                    : Center(
-                        child: Icon(
-                          Icons.video_camera_back_outlined,
-                          size: 60,
-                          color: context.theme.colorScheme.secondary,
-                        ),
-                      ),
+    final FileVideoController controller = Get.put(FileVideoController(path));
+
+    return Obx(
+      () {
+        if (controller.flickManager.flickVideoManager == null &&
+            !controller.flickManager.flickVideoManager!.isVideoInitialized ==
+                true) {
+          return Container(
+            width: double.infinity,
+            height: 200, // Placeholder height
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.video_camera_back_outlined,
+                size: 60,
+                color: context.theme.colorScheme.secondary,
               ),
             ),
+          );
+        }
+
+        return AspectRatio(
+          aspectRatio: controller.flickManager.flickVideoManager
+                  ?.videoPlayerController?.value.aspectRatio ??
+              16 / 9,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: FlickVideoPlayer(
+                flickManager: controller.flickManager,
+                preferredDeviceOrientationFullscreen: [
+                  DeviceOrientation.portraitUp,
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ]),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
 class FileVideoController extends GetxController {
-  final videoPlayerController = Rxn<VideoPlayerController>();
-  final customVideoPlayerController = Rxn<CustomVideoPlayerController>();
+  late final FlickManager flickManager;
   final String videoPath;
-  final BuildContext context;
 
-  FileVideoController(this.videoPath, this.context);
+  /// Constructor with the video path.
+  FileVideoController(this.videoPath);
 
   @override
   void onInit() {
     super.onInit();
-    initializeVideo();
+    _initializePlayer();
   }
 
-  Future<void> initializeVideo() async {
-    videoPlayerController.value = VideoPlayerController.file(File(videoPath));
-    await videoPlayerController.value!.initialize().then(
-      (value) {
-        videoPlayerController.refresh();
-        customVideoPlayerController.refresh();
-      },
-    );
-    customVideoPlayerController.value = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: videoPlayerController.value!,
+  /// Initializes the media player and video controller.
+  Future<void> _initializePlayer() async {
+    flickManager = FlickManager(
+      videoPlayerController: VideoPlayerController.file(File(videoPath)),
+      autoPlay: false,
     );
   }
 
   @override
   void onClose() {
-    videoPlayerController.value?.dispose();
-    customVideoPlayerController.value?.dispose();
+    flickManager.dispose();
     super.onClose();
   }
 }

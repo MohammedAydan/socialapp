@@ -6,18 +6,20 @@
 //   static String interstitialId = Platform.isIOS ? "IOS-ID" : "ANDROID-ID";
 // }
 
-
 import 'dart:io';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdMob {
   static String bannerId = Platform.isIOS
-      ? "ca-app-pub-7492523185817229/7702154485"
-      : "ca-app-pub-7492523185817229/7042828873";
+      ? dotenv.env['ANDROID_ADMOB_BANNER_ID'] ?? ""
+      : dotenv.env['IOS_ADMOB_BANNER_ID'] ?? "";
+
   static String nativeId = Platform.isIOS
-      ? "ca-app-pub-7492523185817229/3898624939"
-      : "ca-app-pub-7492523185817229/7754125378";
+      ? dotenv.env['ANDROID_ADMOB_NATIVE_ID'] ?? ""
+      : dotenv.env['IOS_ADMOB_NATIVE_ID'] ?? "";
 
   static String interstitialId = Platform.isIOS
-      ? "ca-app-pub-7492523185817229/3830659408"
-      : "ca-app-pub-7492523185817229/5997657742";
+      ? dotenv.env['ANDROID_ADMOB_INTERSTITIAL_ID'] ?? ""
+      : dotenv.env['IOS_ADMOB_INTERSTITIAL_ID'] ?? "";
 }

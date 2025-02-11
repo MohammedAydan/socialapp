@@ -1,8 +1,11 @@
-import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:socialapp/core/UploadMedia/upload_media.dart';
 import 'package:socialapp/core/error/failure.dart';
 import 'package:socialapp/core/imagePicker/image_picker.dart';
 import 'package:socialapp/features/auth/controllers/auth_controller.dart';
@@ -10,38 +13,59 @@ import 'package:socialapp/features/posts/controllers/post_controller.dart';
 import 'package:socialapp/features/posts/models/post_model.dart';
 import 'package:socialapp/features/posts/services/repositories/manage_posts_repository.dart';
 import 'package:socialapp/local.notifications.dart';
-import 'package:socialapp/main.dart';
 import 'package:socialapp/widgets/loading.dart';
 
 class PostsController extends GetxController {
   final ManagePostsRepository postRepository;
   final ImagePickerRepository imagePickerRepository;
+  final GetStorage storage;
   final AuthController authController;
+  final UploadMedia _uploadMedia;
   final ScrollController scrollController = ScrollController();
+  final ScrollController scrollControllerForSuggested = ScrollController();
   RxInt page = 1.obs;
+  RxInt pageSuggested = 1.obs;
   RxList<PostModel> posts = RxList<PostModel>([]);
+  RxList<PostModel> postsSuggested = RxList<PostModel>([]);
   RxBool loadingPosts = true.obs;
+  RxBool loadingPostsSuggested = true.obs;
   RxBool loadingMorePosts = false.obs;
+  RxBool loadingMorePostsSuggested = false.obs;
   RxBool finish = false.obs;
+  RxBool finishSuggested = false.obs;
   RxString titlePost = "".obs;
   RxString bodyPost = "".obs;
   RxBool publicPost = true.obs;
   RxString filePath = "".obs;
+  RxString embedText = "".obs;
   RxString fileType = "".obs;
   RxDouble fileSize = 0.0.obs;
   RxString error = "".obs;
+  RxBool isVisibility = true.obs;
+  QuillController quillController = QuillController.basic();
 
   PostsController(
     this.postRepository,
     this.imagePickerRepository,
     this.authController,
+    this.storage,
+    this._uploadMedia,
   );
+
+  void setInitalPage(int i) => storage.write("INITAL_PAGE", i);
+  int getInitalPage() => storage.read("INITAL_PAGE") ?? 0;
 
   @override
   void onInit() {
     super.onInit();
     getInitPosts();
     scrollController.addListener(_scrollListener);
+    initSuggested();
+  }
+
+  void initSuggested() {
+    getInitPostsSuggested();
+    scrollControllerForSuggested.addListener(_scrollListenerForSuggested);
   }
 
   Future<void> getInitPosts() async {
@@ -53,6 +77,18 @@ class PostsController extends GetxController {
       error(getMessageFromFailure(e));
     } finally {
       loadingPosts(false);
+    }
+  }
+
+  Future<void> getInitPostsSuggested() async {
+    try {
+      error("");
+      loadingPostsSuggested(true);
+      await getPostsSuggested();
+    } on Failure catch (e) {
+      error(getMessageFromFailure(e));
+    } finally {
+      loadingPostsSuggested(false);
     }
   }
 
@@ -84,6 +120,35 @@ class PostsController extends GetxController {
     }
   }
 
+  Future<void> getPostsSuggested() async {
+    try {
+      error("");
+      finishSuggested(false);
+      loadingMorePostsSuggested(true);
+
+      final res =
+          await postRepository.getPostsSuggested(page: page.value, limit: 10);
+      res.fold(
+        (l) => error(getMessageFromFailure(l)),
+        (r) {
+          if (r.isEmpty) {
+            finishSuggested(true);
+          } else {
+            if (page.value == 1) {
+              postsSuggested.clear();
+            }
+            postsSuggested.addAll(r);
+            pageSuggested.value++;
+          }
+        },
+      );
+    } on Failure catch (e) {
+      error(getMessageFromFailure(e));
+    } finally {
+      loadingMorePostsSuggested(false);
+    }
+  }
+
   Future<void> refreshPosts() async {
     try {
       error("");
@@ -95,7 +160,26 @@ class PostsController extends GetxController {
     }
   }
 
+  Future<void> refreshPostsSuggested() async {
+    try {
+      error("");
+      pageSuggested(1);
+      finishSuggested(false);
+      await getPostsSuggested();
+    } on Failure catch (e) {
+      error(getMessageFromFailure(e));
+    }
+  }
+
   void _scrollListener() {
+    if (scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      isVisibility.value = true;
+    }
+    if (scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      isVisibility.value = false;
+    }
     if (scrollController.position.pixels ==
         scrollController.position.maxScrollExtent) {
       if (!finish.value && !loadingPosts.value) {
@@ -104,7 +188,26 @@ class PostsController extends GetxController {
     }
   }
 
+  void _scrollListenerForSuggested() {
+    if (scrollControllerForSuggested.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      isVisibility.value = true;
+    }
+    if (scrollControllerForSuggested.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      isVisibility.value = false;
+    }
+    if (scrollControllerForSuggested.position.pixels ==
+        scrollControllerForSuggested.position.maxScrollExtent) {
+      if (!finishSuggested.value && !loadingPostsSuggested.value) {
+        getPostsSuggested();
+      }
+    }
+  }
+
   Future<void> addPost(PostModel post) async {
+    // post.body = jsonEncode(quillController.document.toDelta().toJson());
+    quillController.clear();
     if (post.mediaType!.isNotEmpty && post.mediaUrl!.isNotEmpty) {
       post
         ..mediaType = fileType.value
@@ -120,10 +223,11 @@ class PostsController extends GetxController {
         post.mediaUrl!.isNotEmpty) {
       try {
         error("");
-        await pushPostNotification();
+        // await pushPostNotification();
         showLoading();
 
         if (post.mediaType != null &&
+            post.mediaType != "embedded" &&
             post.mediaUrl != null &&
             post.mediaType!.isNotEmpty &&
             post.mediaUrl!.isNotEmpty) {
@@ -174,26 +278,18 @@ class PostsController extends GetxController {
         Get.back();
         error(getMessageFromFailure(e));
       } finally {
-        await cancelPushPostNotification();
+        // await cancelPushPostNotification();
       }
     } else {
       error("post_cannot_be_empty".tr);
     }
   }
 
+  // new version of uploadMedia
   Future<String?> uploadMedia(String path) async {
     try {
       error("");
-      String uid = authController.user.value?.id ?? "";
-      String ex = path.split(".").last;
-      final filePath = "$uid-${DateTime.now().toIso8601String()}.$ex";
-
-      await supabase.storage.from("media").upload(
-            filePath,
-            File(path),
-          );
-
-      final publicUrl = supabase.storage.from("media").getPublicUrl(filePath);
+      final publicUrl = await _uploadMedia.uploadMedia(path);
       return publicUrl;
     } catch (e) {
       print(e);
@@ -202,6 +298,28 @@ class PostsController extends GetxController {
     }
   }
 
+  // bad version of uploadMedia
+  // Future<String?> uploadMedia(String path) async {
+  //   try {
+  //     error("");
+  //     String uid = authController.user.value?.id ?? "";
+  //     String ex = path.split(".").last;
+  //     final filePath = "$uid-${DateTime.now().toIso8601String()}.$ex";
+
+  //     await supabase.storage.from("media").upload(
+  //           filePath,
+  //           File(path),
+  //         );
+
+  //     final publicUrl = supabase.storage.from("media").getPublicUrl(filePath);
+  //     return publicUrl;
+  //   } catch (e) {
+  //     print(e);
+  //     error(e.toString());
+  //     return null;
+  //   }
+  // }
+
   void removePost(int id) async {
     posts.removeWhere((p) => p.postId == id);
   }
@@ -209,6 +327,8 @@ class PostsController extends GetxController {
   @override
   void onClose() {
     scrollController.dispose();
+    scrollControllerForSuggested.dispose();
+    quillController.dispose();
     super.onClose();
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:socialapp/features/posts/controllers/posts_controller.dart';
+import 'package:socialapp/features/posts/pages/web_view.dart';
 import 'package:socialapp/widgets/file_video_player_widget.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 
@@ -23,6 +24,10 @@ class ShowMedia extends StatelessWidget {
           children: [
             Builder(
               builder: (context) {
+                if (controller.fileType.value == "embedded" &&
+                    controller.filePath.value.isNotEmpty) {
+                  return buildVideoWidget(controller.filePath.value);
+                }
                 if (controller.fileType.value == "image") {
                   return Image.file(File(controller.filePath.value));
                 } else if (controller.fileType.value == "audio") {

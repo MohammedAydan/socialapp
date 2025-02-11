@@ -12,6 +12,8 @@ import 'package:socialapp/features/posts/services/repositories/manage_posts_repo
 import 'package:socialapp/main.dart';
 import 'package:socialapp/widgets/loading.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:username_validator/username_validator.dart';
 
 class AuthController extends GetxController {
   Rxn<UserModel> user = Rxn<UserModel>();
@@ -32,6 +34,10 @@ class AuthController extends GetxController {
   AuthController(this.authRepository, this.postRepository);
 
   Future<void> login(String email, String password) async {
+    if (EmailValidator.validate(email) == false) {
+      error("invalid_email".tr);
+      return;
+    }
     try {
       error("");
       showLoading();
@@ -59,6 +65,15 @@ class AuthController extends GetxController {
   }
 
   Future<void> register() async {
+    if (!UValidator.validateThis(
+        pattern: RegPattern.strict, username: username.value)) {
+      error("username_is_required".tr);
+      return;
+    }
+    if (EmailValidator.validate(email.value) == false) {
+      error("invalid_email".tr);
+      return;
+    }
     if (pass.value != repass.value) {
       error("passwords_do_not_match".tr);
       return;
