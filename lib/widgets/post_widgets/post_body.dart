@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 import 'package:socialapp/features/posts/controllers/post_controller.dart';
 import 'package:socialapp/features/posts/models/post_model.dart';
 import 'package:socialapp/widgets/error_card.dart';
-import 'package:socialapp/widgets/post_widgets/get_html_or_markdown_widget.dart';
-
+import 'package:url_launcher/url_launcher_string.dart';
 import 'copy_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PostBody extends StatelessWidget {
   const PostBody({
@@ -89,6 +89,11 @@ class PostBody extends StatelessWidget {
                     child: MarkdownBody(
                       selectable: false,
                       data: post.body ?? "",
+                      onTapLink: (text, href, title) async {
+                        if (href != null && await canLaunchUrlString(href)) {
+                          await launchUrlString(href);
+                        }
+                      },
                     ),
                   ),
               ],

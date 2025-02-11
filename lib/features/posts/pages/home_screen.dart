@@ -21,90 +21,102 @@ class HomeScreen extends StatelessWidget {
       body: DefaultTabController(
         length: 2,
         initialIndex: controller.getInitalPage(),
-        child: Column(
+        child: Stack(
           children: [
-            Obx(
-              () => Visibility(
-                visible: controller.isVisibility.value,
-                child: Container(
-                  color: Get.theme.appBarTheme.backgroundColor,
-                  child: TabBar(
-                    unselectedLabelColor:
-                        Get.theme.colorScheme.primary.withOpacity(0.5),
-                    labelColor: Get.theme.colorScheme.primary,
-                    indicatorColor: Get.theme.colorScheme.primary,
-                    indicatorWeight: 2.0,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    overlayColor:
-                        const WidgetStatePropertyAll(Colors.transparent),
-                    onTap: controller.setInitalPage,
-                    tabs: [
-                      Tab(
-                        icon: const Icon(Icons.home_rounded),
-                        text: "home".tr
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.sailing_rounded),
-                        text: "suggested".tr,
-                      ),
-                    ],
+            Column(
+              children: [
+                Obx(() {
+                  if (controller.error.value.isNotEmpty) {
+                    return Column(
+                      children: [
+                        ErrorCard(error: controller.error.value),
+                        const SizedBox(height: 10),
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                }),
+                Expanded(
+                  child: Obx(() {
+                    return TabBarView(
+                      children: [
+                        RefreshIndicator(
+                          onRefresh: () async {
+                            await controller.refreshPosts();
+                          },
+                          child: (controller.authController.user.value
+                                          ?.basicPlan ==
+                                      true ||
+                                  controller.authController.user.value
+                                          ?.plusPlan ==
+                                      true)
+                              ? ShowPosts(
+                                  controller: controller,
+                                  maxWidth: maxWidth,
+                                )
+                              : ShowPostsAndAds(
+                                  controller: controller,
+                                  maxWidth: maxWidth,
+                                ),
+                        ),
+                        RefreshIndicator(
+                          onRefresh: () async {
+                            await controller.refreshPostsSuggested();
+                          },
+                          child: (controller.authController.user.value
+                                          ?.basicPlan ==
+                                      true ||
+                                  controller.authController.user.value
+                                          ?.plusPlan ==
+                                      true)
+                              ? ShowPostsSuggested(
+                                  controller: controller,
+                                  maxWidth: maxWidth,
+                                )
+                              : ShowPostsSuggestedAndAds(
+                                  controller: controller,
+                                  maxWidth: maxWidth,
+                                ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Obx(
+                () => Visibility(
+                  visible: controller.isVisibility.value,
+                  child: Container(
+                    color: Get.theme.appBarTheme.backgroundColor,
+                    child: TabBar(
+                      unselectedLabelColor:
+                          Get.theme.colorScheme.primary.withOpacity(0.5),
+                      labelColor: Get.theme.colorScheme.primary,
+                      indicatorColor: Get.theme.colorScheme.primary,
+                      indicatorWeight: 2.0,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      overlayColor:
+                          const WidgetStatePropertyAll(Colors.transparent),
+                      onTap: controller.setInitalPage,
+                      tabs: [
+                        Tab(
+                            icon: const Icon(Icons.home_rounded),
+                            text: "home".tr),
+                        Tab(
+                          icon: const Icon(Icons.sailing_rounded),
+                          text: "suggested".tr,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Obx(() {
-              if (controller.error.value.isNotEmpty) {
-                return Column(
-                  children: [
-                    ErrorCard(error: controller.error.value),
-                    const SizedBox(height: 10),
-                  ],
-                );
-              }
-              return const SizedBox();
-            }),
-            Expanded(
-              child: Obx(() {
-                return TabBarView(
-                  children: [
-                    RefreshIndicator(
-                      onRefresh: () async {
-                        await controller.refreshPosts();
-                      },
-                      child: (controller.authController.user.value?.basicPlan ==
-                                  true ||
-                              controller.authController.user.value?.plusPlan ==
-                                  true)
-                          ? ShowPosts(
-                              controller: controller,
-                              maxWidth: maxWidth,
-                            )
-                          : ShowPostsAndAds(
-                              controller: controller,
-                              maxWidth: maxWidth,
-                            ),
-                    ),
-                    RefreshIndicator(
-                      onRefresh: () async {
-                        await controller.refreshPostsSuggested();
-                      },
-                      child: (controller.authController.user.value?.basicPlan ==
-                                  true ||
-                              controller.authController.user.value?.plusPlan ==
-                                  true)
-                          ? ShowPostsSuggested(
-                              controller: controller,
-                              maxWidth: maxWidth,
-                            )
-                          : ShowPostsSuggestedAndAds(
-                              controller: controller,
-                              maxWidth: maxWidth,
-                            ),
-                    ),
-                  ],
-                );
-              }),
             ),
           ],
         ),

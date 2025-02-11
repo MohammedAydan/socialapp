@@ -20,6 +20,7 @@ class UploadMediaImpl implements UploadMedia {
       });
 
       Response response = await dio.post(url, data: formData);
+      print(response.data);
 
       return response.data["url"];
     } catch (e) {

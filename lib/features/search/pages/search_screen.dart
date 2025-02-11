@@ -19,8 +19,10 @@ class SearchScreen extends GetView<SearchUsersController> {
       },
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           title: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(0),
             child: Row(
               children: [
                 Expanded(
@@ -32,6 +34,33 @@ class SearchScreen extends GetView<SearchUsersController> {
                     label: "lable_search_input".tr,
                     height: 45,
                   ),
+                ),
+                Obx(
+                  () => (controller.isLoading.value ||
+                          controller.error.value.isNotEmpty ||
+                          controller.users.isEmpty)
+                      ? SizedBox()
+                      : Container(
+                          width: 45,
+                          height: 45,
+                          margin: EdgeInsets.only(
+                            top: 1,
+                            right: Get.locale?.languageCode == "ar" ? 10 : 0,
+                            left: Get.locale?.languageCode == "ar" ? 0 : 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: context.theme.colorScheme.surface,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              controller.users.clear();
+                              controller.searchUsers("");
+                              controller.textEditingController.clear();
+                            },
+                            icon: const Icon(Icons.clear),
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -78,22 +107,6 @@ class SearchScreen extends GetView<SearchUsersController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 1),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.tertiary,
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    controller.users.clear();
-                    controller.searchUsers("");
-                    controller.textEditingController.clear();
-                  },
-                  icon: const Icon(Icons.clear),
-                ),
-              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: controller.users.length,

@@ -14,11 +14,6 @@ class NotificationCard extends GetView {
   Widget build(BuildContext context) {
     String langCode = Get.locale != null ? Get.locale!.languageCode : "en";
 
-    // Get.put(
-    //   NotificationCardController(Get.find(), notification),
-    //   tag: "${notification.id}_NOTIFICATION_V1",
-    // );
-
     return GestureDetector(
       onTap: () {
         if (notification.type?.toLowerCase() == "like") {
@@ -35,70 +30,74 @@ class NotificationCard extends GetView {
         }
       },
       child: Container(
-        width: 300,
-        margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.all(10),
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: context.theme.colorScheme.tertiary,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      child: Center(
-                        child: Icon(
-                          notification.type == "follow"
-                              ? FontAwesome.user_solid
-                              : notification.type == "like"
-                                  ? FontAwesome.heart_solid
-                                  : notification.type == "shareing"
-                                      ? FontAwesome.share_solid
-                                      : notification.type == "comment"
-                                          ? FontAwesome.comment_dots_solid
-                                          : Icons.notifications,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("${notification.title?[langCode]}"),
-                        Text(
-                          DateTimeFormat.relative(
-                            notification.createdAt!,
-                            ifNow: "now".tr,
-                          ),
-                          style: TextStyle(
-                            color: context.theme.colorScheme.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const Row(
-                  children: [
-                    // SizedBox(
-                    //   width: 90,
-                    //   height: 30,
-                    //   child: CustomPrimaryButton(
-                    //     text: "Follow",
-                    //     onPressed: () {},
-                    //   ),
-                    // ),
-                  ],
-                )
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 5),
             ),
-            const SizedBox(height: 10),
-            Text("${notification.body?[langCode]}"),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: context.theme.colorScheme.primary,
+              child: Icon(
+                notification.type == "follow"
+                    ? FontAwesome.user_solid
+                    : notification.type == "like"
+                        ? FontAwesome.heart_solid
+                        : notification.type == "shareing"
+                            ? FontAwesome.share_solid
+                            : notification.type == "comment"
+                                ? FontAwesome.comment_dots_solid
+                                : Icons.notifications,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${notification.title?[langCode]}",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    DateTimeFormat.relative(
+                      notification.createdAt!,
+                      ifNow: "now".tr,
+                    ),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          context.theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "${notification.body?[langCode]}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

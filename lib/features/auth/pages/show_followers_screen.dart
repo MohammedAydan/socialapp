@@ -14,8 +14,9 @@ class ShowFollowersScreen extends GetView<FollowersController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text("FOLLOWERS".tr),
+        title: Text("FOLLOWERS".tr),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: Obx(() {
         if (controller.loadingFollowers.value) {

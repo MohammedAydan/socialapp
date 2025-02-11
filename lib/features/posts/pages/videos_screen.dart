@@ -2,13 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socialapp/features/posts/controllers/main_layout_controller.dart';
 import 'package:socialapp/features/posts/controllers/videos_posts_controller.dart';
-import 'package:socialapp/features/posts/models/post_model.dart';
-import 'package:socialapp/features/posts/widgets/banner_Ad_widget.dart';
-import 'package:socialapp/features/posts/widgets/native_ad_widget.dart';
 import 'package:socialapp/widgets/error_card_and_refresh_button.dart';
 import 'package:socialapp/widgets/loadings/post_loading.dart';
-
-import '../../../widgets/post_widgets/post_card.dart';
 import '../widgets/show_videos.dart';
 import '../widgets/show_videos_and_ads.dart';
 
@@ -29,6 +24,7 @@ class VideosScreen extends GetView<VideosPostsController> {
         appBar: AppBar(
           title: Text("videos".tr),
           centerTitle: true,
+          backgroundColor: Colors.transparent,
         ),
         body: RefreshIndicator(
           onRefresh: () async => controller.getPosts(),

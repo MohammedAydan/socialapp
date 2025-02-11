@@ -15,6 +15,7 @@ class ShowShareingsScreen extends GetView<ShareingsController> {
       appBar: AppBar(
         title: Text("SHAREINGS".tr),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: Obx(() {
         if (controller.loadingShareings.value) {

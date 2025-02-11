@@ -12,17 +12,18 @@ class NotificationsScreen extends GetView<NotificationsController> {
   @override
   Widget build(BuildContext context) {
     if (controller.notReaded > 0) {
-      controller.readedAllNotifications();
+      controller.markAllAsRead();
     }
     return Scaffold(
       appBar: AppBar(
         title: Text("notifications".tr),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
         actions: [
           Obx(
-            () => controller.loading.isFalse
+            () => controller.isLoading.isFalse
                 ? IconButton(
-                    onPressed: () => controller.getInitNotifications(),
+                    onPressed: () => controller.fetchInitialNotifications(),
                     icon: const Icon(Icons.refresh_rounded),
                   )
                 : const SizedBox(),
@@ -31,10 +32,10 @@ class NotificationsScreen extends GetView<NotificationsController> {
       ),
       body: Obx(
         () {
-          if (controller.loading.value) {
+          if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (controller.error.value.isNotEmpty) {
+          if (controller.errorMessage.value.isNotEmpty) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -47,7 +48,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
                     color: Colors.red.withOpacity(0.1),
                   ),
                   child: Text(
-                    controller.error.value,
+                    controller.errorMessage.value,
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,
@@ -61,14 +62,14 @@ class NotificationsScreen extends GetView<NotificationsController> {
           if (controller.notifications.isEmpty) {
             return ErrorCardAndRefreshButton(
               method: () {
-                controller.getInitNotifications();
+                controller.fetchInitialNotifications();
               },
               message: "no_notifications".tr,
               btnText: "refresh".tr,
             );
           }
           return RefreshIndicator(
-            onRefresh: () async => await controller.getInitNotifications(),
+            onRefresh: () async => await controller.fetchInitialNotifications(),
             child: ListView(
               controller: controller.scrollController,
               children: [
@@ -82,7 +83,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
                     );
                   },
                 ),
-                if (controller.loadingMorePosts.value)
+                if (controller.isLoadingMore.value)
                   const Center(child: CircularProgressIndicator()),
               ],
             ),

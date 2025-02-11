@@ -13,8 +13,9 @@ class ShowLikesScreen extends GetView<LikesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text("LIKES".tr),
+        title: Text("LIKES".tr),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: Obx(() {
         if (controller.loadingLikes.value) {

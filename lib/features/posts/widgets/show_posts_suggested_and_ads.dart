@@ -25,6 +25,7 @@ class ShowPostsSuggestedAndAds extends StatelessWidget {
       if (controller.loadingPostsSuggested.value) {
         return ListView.builder(
           itemCount: 10,
+          padding: EdgeInsets.only(top: 75),
           itemBuilder: (context, index) => const PostLoading(),
         );
       }
@@ -39,6 +40,9 @@ class ShowPostsSuggestedAndAds extends StatelessWidget {
       return ListView(
         controller: controller.scrollController,
         children: [
+          SizedBox(
+            height: 75,
+          ),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),

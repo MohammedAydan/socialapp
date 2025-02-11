@@ -28,6 +28,15 @@ class UserProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        // title: Text(
+        //   "Profile",
+        //   style: TextStyle(
+        //     color: context.theme.colorScheme.onSurface,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
       ),
       body: Obx(() {
         if (controller.isInitLoading.value) {
@@ -36,27 +45,22 @@ class UserProfileScreen extends StatelessWidget {
           );
         } else {
           if (controller.error.value.isNotEmpty) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.red.withOpacity(0.1),
-                  ),
-                  child: Text(
-                    controller.error.value,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                    ),
+            return Center(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  controller.error.value,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 10),
-              ],
+              ),
             );
           }
           if (controller.user.value == null) {
@@ -69,6 +73,7 @@ class UserProfileScreen extends StatelessWidget {
             onRefresh: () async => controller.onInit(),
             child: ListView(
               controller: controller.scrollController,
+              // padding: const EdgeInsets.all(16),
               children: [
                 const SizedBox(height: 20),
                 if (controller.user.value?.imageUrl != null) ...[
@@ -83,13 +88,8 @@ class UserProfileScreen extends StatelessWidget {
                     child: Center(
                       child: UserImage(
                         url: controller.user.value!.imageUrl!,
+                        radius: 100,
                       ),
-                      // CircleAvatar(
-                      //   radius: 100,
-                      //   backgroundImage: NetworkImage(
-                      //     controller.user.value!.imageUrl!,
-                      //   ),
-                      // ),
                     ),
                   ),
                 ] else ...[
@@ -97,58 +97,75 @@ class UserProfileScreen extends StatelessWidget {
                     radius: 100,
                     child: Center(
                       child: Text(
-                          "${controller.user.value?.username?[0].toUpperCase()}"),
+                        "${controller.user.value?.username?[0].toUpperCase()}",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: context.theme.colorScheme.onSurface,
+                        ),
+                      ),
                     ),
                   ),
                 ],
+                const SizedBox(height: 20),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "${controller.user.value?.firstName} ${controller.user.value?.lastName}",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: context.theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "@${controller.user.value?.username}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Get.theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            if (controller.user.value?.verification == true)
+                              Icon(
+                                Icons.verified_rounded,
+                                size: 20,
+                                color: Get.theme.colorScheme.primary,
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "${controller.user.value != null ? controller.user.value!.followersCount != null ? formatNumber(controller.user.value!.followersCount!.toInt()) : "0" : "0"} ${"followers".tr}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 20),
                     Text(
                       "${controller.user.value != null ? controller.user.value!.followingCount != null ? formatNumber(controller.user.value!.followingCount!.toInt()) : "0" : "0"} ${"following".tr}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${controller.user.value?.firstName} ${controller.user.value?.lastName}",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: context.theme.colorScheme.secondary,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      if (controller.user.value?.verification == true) ...[
-                        Icon(
-                          Icons.verified_rounded,
-                          size: 19,
-                          color: context.theme.colorScheme.primary,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: Text(
-                    "@${controller.user.value?.username}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: context.theme.colorScheme.secondary.withOpacity(
-                        0.8,
-                      ),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 20),
                 Obx(() {
@@ -275,18 +292,20 @@ class UserProfileScreen extends StatelessWidget {
                 }),
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: context.theme.colorScheme.tertiary,
-                    border: Border.symmetric(
-                      horizontal: BorderSide(
-                        width: 1,
-                        color: context.theme.colorScheme.surface,
+                    color: Get.theme.colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "${controller.user.value?.postsCount == 0 ? controller.user.value?.postsCount : formatNumber(controller.user.value!.postsCount!.toInt())} ${"posts".tr}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  child: Text(
-                    "${controller.user.value?.postsCount == 0 ? controller.user.value?.postsCount : formatNumber(controller.user.value!.postsCount!.toInt())} ${"posts".tr}",
                   ),
                 ),
                 const SizedBox(height: 10),

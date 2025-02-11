@@ -14,13 +14,6 @@ class ProfileController extends GetxController {
   final AuthController authController;
   final ManagePostsRepository postRepository;
   final ImagePickerRepository imagePickerRepository;
-  ScrollController scrollController = ScrollController();
-  RxInt page = 1.obs;
-  RxList<PostModel>? posts = RxList<PostModel>([]);
-  RxBool loading = true.obs;
-  RxBool loadingMorePosts = true.obs;
-  RxBool finish = false.obs;
-  RxString error = "".obs;
 
   ProfileController(
     this.authController,
@@ -28,94 +21,90 @@ class ProfileController extends GetxController {
     this.imagePickerRepository,
   );
 
+  final ScrollController scrollController = ScrollController();
+  final RxInt page = 1.obs;
+  final RxList<PostModel> posts = <PostModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  final RxBool hasMorePosts = true.obs;
+  final RxString errorMessage = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
-    getInitPosts();
-    scrollController.addListener(_scrollListener);
+    fetchInitialPosts();
+    scrollController.addListener(_onScroll);
   }
 
-  Future<void> getInitPosts() async {
-    try {
-      error("");
-      loading.value = true;
-      posts?.clear();
-      await getPosts();
-    } on Failure catch (e) {
-      error(getMessageFromFailure(e));
-    } finally {
-      loading.value = false;
-    }
+  Future<void> fetchInitialPosts() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    posts.clear();
+    page.value = 1;
+    await fetchPosts();
+    isLoading.value = false;
   }
 
-  Future<void> getPosts() async {
-    try {
-      error("");
-      loadingMorePosts(true);
-      final res = await postRepository.getPostsByUserId(
-        supabase.auth.currentUser!.id,
-        page: page.value,
-        all: true,
-      );
-      res.fold((l) {
-        error(getMessageFromFailure(l));
-      }, (r) {
-        if (r.isNotEmpty) {
-          posts?.addAll(r);
+  Future<void> fetchPosts() async {
+    if (!hasMorePosts.value || isLoadingMore.value) return;
+    isLoadingMore.value = true;
+    errorMessage.value = '';
+
+    final result = await postRepository.getPostsByUserId(
+      supabase.auth.currentUser?.id ?? '',
+      page: page.value,
+      all: true,
+    );
+
+    result.fold(
+      (failure) => errorMessage.value = getMessageFromFailure(failure),
+      (newPosts) {
+        if (newPosts.isNotEmpty) {
+          posts.addAll(newPosts);
+          page.value++;
         } else {
-          finish.value = true;
+          hasMorePosts.value = false;
         }
-      });
-    } on Failure catch (e) {
-      error(getMessageFromFailure(e));
-    } finally {
-      loadingMorePosts(false);
-    }
+      },
+    );
+
+    isLoadingMore.value = false;
   }
 
-  void _scrollListener() {
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      if (!finish.value && !loading.value) {
-        page.value++;
-        getPosts();
-      }
+  void _onScroll() {
+    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      fetchPosts();
     }
   }
 
   Future<void> updateUserImage() async {
     final source = await bottomSheetSelectImage();
-    if (source == null) {
-      return;
-    }
+    if (source == null) return;
+    
     try {
-      error("");
       showLoading();
-      XFile? file = await imagePickerRepository.pickImage(source: source);
-      if (file == null) {
-        return;
-      }
-      final res = await authController.authRepository.updateUserImage(
+      final XFile? file = await imagePickerRepository.pickImage(source: source);
+      if (file == null) return;
+
+      final result = await authController.authRepository.updateUserImage(
         file,
         authController.user.value?.imageUrl,
       );
-      res.fold((l) {
-        // error
-        error(getMessageFromFailure(l));
-      }, (r) {
-        authController.user.value?.imageUrl = r;
-      });
-    } on Failure catch (e) {
-      // // //
-      error(getMessageFromFailure(e));
+
+      result.fold(
+        (failure) => errorMessage.value = getMessageFromFailure(failure),
+        (newImageUrl) => authController.user.value?.imageUrl = newImageUrl,
+      );
+    } catch (e) {
+      errorMessage.value = e.toString();
     } finally {
       Get.back();
     }
   }
 
   @override
-  void dispose() {
+  void onClose() {
     scrollController.dispose();
-    super.dispose();
+    super.onClose();
   }
 }
