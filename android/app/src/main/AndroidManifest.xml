@@ -3,6 +3,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:label="SOCIAL"
@@ -37,6 +38,36 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            
+            <!--  -->
+              <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+
+              <!-- App Link sample -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="mohammedaydan.github.io" android:pathPrefix="/" />
+                <data android:scheme="http" android:host="mohammedaydan.github.io" android:pathPrefix="/" />
+                <data android:scheme="http" android:host="mag.com" android:pathPrefix="/" />
+                <data android:scheme="http" android:host="social.mag.com" android:pathPrefix="/" />
+
+            </intent-filter>
+
+            <!-- Deep Link sample -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Add optional android:host to distinguish your app
+                    from others in case of conflicting scheme name -->
+                <data android:scheme="social" android:host="social.mag.com" />
+                <data android:scheme="social" android:host="social.mag" />
+                <data android:scheme="social" android:host="social" />
+                <!-- <data android:scheme="sample" /> -->
+            </intent-filter>
+            <!--  -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

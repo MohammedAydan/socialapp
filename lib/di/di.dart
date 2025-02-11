@@ -40,6 +40,7 @@ import 'package:socialapp/features/user_profile/services/implementation/user_pro
 import 'package:socialapp/features/user_profile/services/repositories/user_profile_repository.dart';
 import 'package:socialapp/onesignal_notification.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:app_links/app_links.dart';
 
 final sl = GetIt.instance;
 
@@ -63,6 +64,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetStorage());
   sl.registerLazySingleton(() => ImagePicker());
   sl.registerLazySingleton(() => Dio());
+  sl.registerLazySingleton(() => AppLinks());
 
   // Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
@@ -89,7 +91,7 @@ Future<void> init() async {
   sl.registerLazySingleton<UploadMedia>(() => UploadMediaImpl(dio: sl()));
 
   // Controllers
-  Get.put(AuthController(sl(), sl()));
+  Get.put(AuthController(sl(), sl(), sl()));
   Get.put(NotificationsController(sl()));
   Get.put(MainLayoutController(Get.find()));
 

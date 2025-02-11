@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:socialapp/core/UploadMedia/upload_media.dart';
@@ -42,7 +40,6 @@ class PostsController extends GetxController {
   RxDouble fileSize = 0.0.obs;
   RxString error = "".obs;
   RxBool isVisibility = true.obs;
-  QuillController quillController = QuillController.basic();
 
   PostsController(
     this.postRepository,
@@ -206,8 +203,6 @@ class PostsController extends GetxController {
   }
 
   Future<void> addPost(PostModel post) async {
-    // post.body = jsonEncode(quillController.document.toDelta().toJson());
-    quillController.clear();
     if (post.mediaType!.isNotEmpty && post.mediaUrl!.isNotEmpty) {
       post
         ..mediaType = fileType.value
@@ -328,7 +323,6 @@ class PostsController extends GetxController {
   void onClose() {
     scrollController.dispose();
     scrollControllerForSuggested.dispose();
-    quillController.dispose();
     super.onClose();
   }
 

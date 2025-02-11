@@ -57,7 +57,8 @@ class PostCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border.symmetric(
                     horizontal: BorderSide(
-                      color: context.theme.colorScheme.secondary,
+                      color:
+                          context.theme.colorScheme.secondary.withOpacity(0.4),
                       width: 1,
                     ),
                   ),
@@ -66,8 +67,9 @@ class PostCard extends StatelessWidget {
                   child: Text(
                     "suggested_post".tr,
                     style: TextStyle(
-                      color: context.theme.colorScheme.secondary,
-                      fontWeight: FontWeight.bold,
+                      color:
+                          context.theme.colorScheme.secondary.withOpacity(0.4),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),

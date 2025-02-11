@@ -20,6 +20,7 @@ class SettingsScreen extends GetView<SettingsController> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -37,108 +38,44 @@ class SettingsScreen extends GetView<SettingsController> {
               return const SizedBox();
             }, controller.error),
             const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "language".tr,
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  color: context.theme.colorScheme.secondary,
-                ),
-              ),
-            ),
-            GestureDetector(
+            _buildSectionTitle(context, "language".tr),
+            _buildListTile(
+              context,
+              icon: Icons.language,
+              title: Get.locale != null
+                  ? Get.locale!.languageCode.toLowerCase().startsWith("ar")
+                      ? "arabic".tr
+                      : "english".tr
+                  : "english".tr,
               onTap: () => bottomSheetLanguage(context, controller),
-              child: Container(
-                margin: const EdgeInsets.only(top: 5),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.tertiary,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.language),
-                    const SizedBox(width: 10),
-                    Text(
-                      Get.locale != null
-                          ? Get.locale!.languageCode
-                                  .toLowerCase()
-                                  .startsWith("ar")
-                              ? "arabic".tr
-                              : "english".tr
-                          : "english".tr,
-                    ),
-                  ],
-                ),
-              ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                Get.isDarkMode ? "dark_mode".tr : "light_mode".tr,
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  color: context.theme.colorScheme.secondary,
-                ),
-              ),
+            Divider(
+              thickness: 1,
+              color: Get.theme.colorScheme.surface,
             ),
-            GestureDetector(
+            _buildSectionTitle(
+                context, Get.isDarkMode ? "dark_mode".tr : "light_mode".tr),
+            _buildListTile(
+              context,
+              icon: Icons.light_mode,
+              title: "light_mode".tr,
               onTap: () => bottomSheetThemeMode(context, controller),
-              child: Container(
-                margin: const EdgeInsets.only(top: 5),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.tertiary,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.light_mode),
-                    const SizedBox(width: 10),
-                    Text("light_mode".tr),
-                  ],
-                ),
-              ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "account_type".tr,
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  color: context.theme.colorScheme.secondary,
-                ),
-              ),
+            Divider(
+              thickness: 1,
+              color: Get.theme.colorScheme.surface,
             ),
-            GestureDetector(
-              onTap: () => bottomSheetAccountType(context, controller),
-              child: Container(
-                margin: const EdgeInsets.only(top: 5),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.tertiary,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.public_outlined),
-                    const SizedBox(width: 10),
-                    Obx(
-                      () {
-                        if (controller.accountType.value == "public") {
-                          return Text("public_account".tr);
-                        }
-                        return Text("private_account".tr);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildSectionTitle(context, "account_type".tr),
+            Obx(() {
+              return _buildListTile(
+                context,
+                icon: Icons.public_outlined,
+                title: controller.accountType.value == "public"
+                    ? "public_account".tr
+                    : "private_account".tr,
+                onTap: () => bottomSheetAccountType(context, controller),
+              );
+            }),
           ],
         ),
       ),
@@ -154,6 +91,37 @@ class SettingsScreen extends GetView<SettingsController> {
             controller.authController.signOut();
           },
           text: "logout".tr,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        title,
+        textAlign: TextAlign.start,
+        style: TextStyle(
+          color: context.theme.colorScheme.secondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListTile(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        color: Get.theme.colorScheme.tertiary,
+        shadowColor: Get.theme.colorScheme.surface,
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+        child: ListTile(
+          leading: Icon(icon),
+          title: Text(title),
         ),
       ),
     );

@@ -22,6 +22,7 @@ class ShowPosts extends StatelessWidget {
       if (controller.loadingPosts.value) {
         return ListView.builder(
           itemCount: 10,
+          padding: EdgeInsets.only(top: 75),
           itemBuilder: (context, index) => const PostLoading(),
         );
       }
@@ -35,6 +36,9 @@ class ShowPosts extends StatelessWidget {
       return ListView(
         controller: controller.scrollController,
         children: [
+          SizedBox(
+            height: 75,
+          ),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),

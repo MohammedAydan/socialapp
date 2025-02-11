@@ -26,13 +26,24 @@ class EditProfileScreen extends GetView<AuthController> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 20),
+                Text(
+                  "Personal Information",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
@@ -50,12 +61,19 @@ class EditProfileScreen extends GetView<AuthController> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 CustomTextFormFeild(
                   label: "phone".tr,
                   controller: phoneController,
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 20),
+                Text(
+                  "Date of Birth",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
@@ -83,7 +101,7 @@ class EditProfileScreen extends GetView<AuthController> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
               ],
             ),
           ),

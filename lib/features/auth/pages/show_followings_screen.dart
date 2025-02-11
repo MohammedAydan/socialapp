@@ -14,8 +14,9 @@ class ShowFollowingsScreen extends GetView<FollowingsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text("FOLLOWINGS".tr),
+        title: Text("FOLLOWINGS".tr),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: Obx(() {
         if (controller.loadingFollowings.value) {
@@ -51,7 +52,7 @@ class ShowFollowingsScreen extends GetView<FollowingsController> {
                 if (controller.error.value.isNotEmpty) {
                   return Column(
                     children: [
-                     ErrorCard(error: controller.error.value),
+                      ErrorCard(error: controller.error.value),
                       const SizedBox(height: 10),
                     ],
                   );

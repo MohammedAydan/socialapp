@@ -19,16 +19,27 @@ class BottomNavBarForAddPost extends StatelessWidget {
       height: 90,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.tertiary,
+        color: context.theme.colorScheme.surface,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Obx(() {
-              return DropdownButtonFormField(
+              return DropdownButtonFormField<String>(
                 value: controller.publicPost.value ? "public" : "private",
-                dropdownColor: context.theme.colorScheme.tertiary,
+                dropdownColor: context.theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(15),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -39,8 +50,8 @@ class BottomNavBarForAddPost extends StatelessWidget {
                   fillColor: context.theme.colorScheme.surface,
                 ),
                 items: [
-                  DropdownMenuItem(value: "public", child: Text("public".tr)),
-                  DropdownMenuItem(value: "private", child: Text("private".tr)),
+                  DropdownMenuItem(value: "public", child: Text("Public".tr)),
+                  DropdownMenuItem(value: "private", child: Text("Private".tr)),
                 ],
                 onChanged: (v) {
                   controller.publicPost(v == "public");
@@ -51,40 +62,31 @@ class BottomNavBarForAddPost extends StatelessWidget {
           const SizedBox(width: 10),
           SizedBox(
             width: 150,
-            child: StreamBuilder(
-                stream: controller.quillController.changes,
-                builder: (context, snapshot) {
-                  return Obx(() {
-                    final quillIsNotEmpty =
-                        (!controller.quillController.document.isEmpty());
-
-                    final isButtonEnabled =
-                        controller.titlePost.value.isNotEmpty ||
-                            controller.bodyPost.isNotEmpty ||
-                            (controller.filePath.value.isNotEmpty &&
-                                    controller.fileType.value.isNotEmpty ||
-                                quillIsNotEmpty) ||
-                            post != null;
-                    return CustomPrimaryButton(
-                      text: "post".tr,
-                      onPressed: !isButtonEnabled
-                          ? null
-                          : () {
-                              controller.addPost(
-                                PostModel(
-                                  userId: supabase.auth.currentUser?.id,
-                                  title: controller.titlePost.value,
-                                  body: controller.bodyPost.value,
-                                  public: controller.publicPost.value,
-                                  mediaType: controller.fileType.value,
-                                  mediaUrl: controller.filePath.value,
-                                  sharingPostId: post?.postId,
-                                ),
-                              );
-                            },
-                    );
-                  });
-                }),
+            child: Obx(() {
+              final isButtonEnabled = controller.titlePost.value.isNotEmpty ||
+                  controller.bodyPost.isNotEmpty ||
+                  (controller.filePath.value.isNotEmpty &&
+                      controller.fileType.value.isNotEmpty) ||
+                  post != null;
+              return CustomPrimaryButton(
+                text: "Post".tr,
+                onPressed: !isButtonEnabled
+                    ? null
+                    : () {
+                        controller.addPost(
+                          PostModel(
+                            userId: supabase.auth.currentUser?.id,
+                            title: controller.titlePost.value,
+                            body: controller.bodyPost.value,
+                            public: controller.publicPost.value,
+                            mediaType: controller.fileType.value,
+                            mediaUrl: controller.filePath.value,
+                            sharingPostId: post?.postId,
+                          ),
+                        );
+                      },
+              );
+            }),
           )
         ],
       ),

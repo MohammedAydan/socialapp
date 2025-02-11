@@ -66,8 +66,8 @@ class PostUserInfo extends StatelessWidget {
                       if (post.verification == true)
                         Icon(
                           Icons.verified_rounded,
-                          size: 19,
-                          color: context.theme.colorScheme.primary,
+                          size: 20,
+                          color: Get.theme.colorScheme.primary,
                         ),
                     ],
                   ),

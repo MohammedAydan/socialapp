@@ -2,6 +2,7 @@
 import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:cloudinary_url_gen/config/cloudinary_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -13,10 +14,13 @@ import 'package:socialapp/core/themes/light_theme.dart';
 import 'package:socialapp/core/translations/translations.dart';
 import 'package:socialapp/di/di.dart' as di;
 import 'package:socialapp/features/auth/pages/splash_screen.dart';
+import 'package:socialapp/features/posts/models/post_model.dart';
+import 'package:socialapp/features/posts/services/repositories/manage_posts_repository.dart';
 import 'package:socialapp/features/settings/controllers/settings_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:socialapp/local.notifications.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:workmanager/workmanager.dart';
 
 /*
   please set .env file and set keys
@@ -59,6 +63,12 @@ void main() async {
   initNotification();
 
   await di.init();
+
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarContrastEnforced: false,
+    ),
+  );
 
   runApp(const MyApp());
 }

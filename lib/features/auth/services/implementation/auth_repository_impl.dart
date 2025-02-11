@@ -28,7 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       final res = await supabase.auth.signUp(
-        email: user.email,
+        email: user.email.toLowerCase(),
         password: user.password,
       );
 
