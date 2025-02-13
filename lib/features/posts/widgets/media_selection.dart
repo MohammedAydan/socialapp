@@ -83,12 +83,12 @@ class MediaSelection extends StatelessWidget {
     if (file != null) {
       double fileSizeInMB = await _getFileSize(File(file.path));
       if (fileSizeInMB > 10) {
+        Get.back();
         _showError('error_image_size'.tr);
       } else {
         Get.to(() => _proImageEditor(file));
       }
     }
-    Get.back();
   }
 
   Future<void> _pickAndValidateFile(FileType type, String textType,
@@ -103,6 +103,7 @@ class MediaSelection extends StatelessWidget {
         double fileSizeInMB = await _getFileSize(file);
         controller.fileSize(fileSizeInMB);
         if (fileSizeInMB > 100) {
+          Get.back();
           _showError('error_file_size'.tr);
         } else {
           controller.filePath(path);
@@ -111,7 +112,6 @@ class MediaSelection extends StatelessWidget {
         }
       }
     }
-    Get.back();
   }
 
   Widget _proImageEditor(XFile path) {
