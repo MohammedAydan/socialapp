@@ -12,6 +12,7 @@ class UserModel {
   int? day;
   int? month;
   int? year;
+  String? gender;
   String? accountType;
   bool? verification;
   int? followersCount;
@@ -40,6 +41,7 @@ class UserModel {
     this.day,
     this.month,
     this.year,
+    this.gender,
     this.accountType,
     this.verification,
     this.followersCount,
@@ -70,6 +72,7 @@ class UserModel {
       day: json["day"] != null ? int.parse(json["day"].toString()) : null,
       month: json["month"] != null ? int.parse(json["month"].toString()) : null,
       year: json["year"] != null ? int.parse(json["year"].toString()) : null,
+      gender: json["gender"] as String?,
       accountType: json["account_type"] as String?,
       verification: json["verification"] != null
           ? json["verification"] == true ||
@@ -131,6 +134,7 @@ class UserModel {
       "day": day,
       "month": month,
       "year": year,
+      "gender": gender,
       "account_type": accountType,
       "verification": verification,
       "followers_count": followersCount,

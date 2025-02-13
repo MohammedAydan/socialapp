@@ -7,10 +7,7 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 class FileVideoPlayerWidget extends StatelessWidget {
-  const FileVideoPlayerWidget({
-    super.key,
-    required this.path,
-  });
+  const FileVideoPlayerWidget({super.key, required this.path});
 
   final String path;
 
@@ -20,9 +17,8 @@ class FileVideoPlayerWidget extends StatelessWidget {
 
     return Obx(
       () {
-        if (controller.flickManager.flickVideoManager == null &&
-            !controller.flickManager.flickVideoManager!.isVideoInitialized ==
-                true) {
+        if (!controller.isInitialized.value ||
+            controller.flickManager == null) {
           return Container(
             width: double.infinity,
             height: 200, // Placeholder height
@@ -41,18 +37,19 @@ class FileVideoPlayerWidget extends StatelessWidget {
         }
 
         return AspectRatio(
-          aspectRatio: controller.flickManager.flickVideoManager
-                  ?.videoPlayerController?.value.aspectRatio ??
+          aspectRatio: controller.flickManager!.flickVideoManager
+                  ?.videoPlayerController!.value.aspectRatio ??
               16 / 9,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: FlickVideoPlayer(
-                flickManager: controller.flickManager,
-                preferredDeviceOrientationFullscreen: [
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]),
+              flickManager: controller.flickManager!,
+              preferredDeviceOrientationFullscreen: [
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+              ],
+            ),
           ),
         );
       },
@@ -61,8 +58,9 @@ class FileVideoPlayerWidget extends StatelessWidget {
 }
 
 class FileVideoController extends GetxController {
-  late final FlickManager flickManager;
+  FlickManager? flickManager;
   final String videoPath;
+  final isInitialized = false.obs;
 
   /// Constructor with the video path.
   FileVideoController(this.videoPath);
@@ -76,14 +74,17 @@ class FileVideoController extends GetxController {
   /// Initializes the media player and video controller.
   Future<void> _initializePlayer() async {
     flickManager = FlickManager(
-      videoPlayerController: VideoPlayerController.file(File(videoPath)),
+      videoPlayerController: VideoPlayerController.file(File(videoPath))
+        ..initialize().then((_) {
+          isInitialized.value = true; // Notify UI when initialized
+        }),
       autoPlay: false,
     );
   }
 
   @override
   void onClose() {
-    flickManager.dispose();
+    flickManager?.dispose();
     super.onClose();
   }
 }

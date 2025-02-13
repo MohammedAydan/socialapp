@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:socialapp/common/strings.dart';
@@ -19,8 +20,7 @@ class OneSignalNotificationsP {
     const String url = 'https://onesignal.com/api/v1/notifications';
     final Map<String, String> headers = {
       HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8',
-      HttpHeaders.authorizationHeader:
-          'Basic OWUwNzE3YmEtN2NkNi00MGNlLThmZmYtMDM3ZjdhOTQ4MDEz',
+      HttpHeaders.authorizationHeader: 'Basic ${dotenv.env['ONESIGNAL_AUTH']}',
     };
     final String payload = json.encode(notification.toJson());
 

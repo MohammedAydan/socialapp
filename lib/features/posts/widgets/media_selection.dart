@@ -1,17 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pro_image_editor/features/main_editor/main_editor.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:socialapp/features/posts/controllers/posts_controller.dart';
 import 'package:socialapp/features/posts/widgets/add_media_btn.dart';
 import 'package:socialapp/widgets/custom_text_form_feild.dart';
+import 'package:socialapp/widgets/loading.dart';
 
 class MediaSelection extends StatelessWidget {
   const MediaSelection({super.key, required this.controller});
@@ -22,135 +20,95 @@ class MediaSelection extends StatelessWidget {
     bool isPluseOrBasicPlan = true;
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: SizedBox(
-        child: Obx(
-          () => (controller.filePath.value.isNotEmpty &&
-                  controller.fileType.value.isNotEmpty)
-              ? const SizedBox()
-              : SingleChildScrollView(
-                
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+      child: Obx(
+        () => controller.filePath.value.isNotEmpty &&
+                controller.fileType.value.isNotEmpty
+            ? const SizedBox()
+            : Stack(
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      _buildAddMediaBtn(Icons.perm_media_outlined,
+                          () => _pickImage(ImageSource.gallery)),
                       _buildAddMediaBtn(
-                        icon: Icons.perm_media_outlined,
-                        onPressed: () => _pickImage(ImageSource.gallery),
-                      ),
-                      const SizedBox(width: 10),
+                          Icons.camera, () => _pickImage(ImageSource.camera)),
+                      _buildAddMediaBtn(Icons.link_rounded, _showEmbedDialog),
+                      _buildAddMediaBtn(Icons.video_collection_rounded,
+                          () => _pickAndValidateFile(FileType.video, "video"),
+                          access: isPluseOrBasicPlan),
+                      _buildAddMediaBtn(Icons.audio_file_rounded,
+                          () => _pickAndValidateFile(FileType.audio, "audio"),
+                          access: isPluseOrBasicPlan),
                       _buildAddMediaBtn(
-                        icon: Icons.camera,
-                        onPressed: () => _pickImage(ImageSource.camera),
-                      ),
-                      const SizedBox(width: 10),
-                      _buildAddMediaBtn(
-                        icon: Icons.link_rounded,
-                        onPressed: _showEmbedDialog,
-                      ),
-                      const SizedBox(width: 10),
-                      _buildAddMediaBtn(
-                        icon: Icons.video_collection_rounded,
-                        onPressed: () =>
-                            _pickAndValidateFile(FileType.video, "video"),
-                        access: isPluseOrBasicPlan,
-                      ),
-                      const SizedBox(width: 10),
-                      _buildAddMediaBtn(
-                        icon: Icons.audio_file_rounded,
-                        onPressed: () =>
-                            _pickAndValidateFile(FileType.audio, "audio"),
-                        access: isPluseOrBasicPlan,
-                      ),
-                      const SizedBox(width: 10),
-                      _buildAddMediaBtn(
-                        icon: Icons.file_present_rounded,
-                        onPressed: () => _pickAndValidateFile(
-                          FileType.custom,
-                          "file",
-                          allowedExtensions: [
-                            "pdf",
-                            "doc",
-                            "docx",
-                            "ppt",
-                            "pptx",
-                            "xls",
-                            "xlsx",
-                            "txt",
-                            "rtf",
-                            "zip",
-                            "rar",
-                            "7z",
-                            "tar",
-                            "gz"
-                          ],
-                        ),
-                        access: isPluseOrBasicPlan,
-                      ),
+                          Icons.file_present_rounded,
+                          () => _pickAndValidateFile(FileType.custom, "file",
+                                  allowedExtensions: [
+                                    "pdf",
+                                    "doc",
+                                    "docx",
+                                    "ppt",
+                                    "pptx",
+                                    "xls",
+                                    "xlsx",
+                                    "txt",
+                                    "rtf",
+                                    "zip",
+                                    "rar",
+                                    "7z",
+                                    "tar",
+                                    "gz"
+                                  ]),
+                          access: isPluseOrBasicPlan),
                     ],
                   ),
-                ),
-        ),
+                ],
+              ),
       ),
     );
   }
 
-  Widget _buildAddMediaBtn({
-    required IconData icon,
-    required VoidCallback onPressed,
-    bool access = true,
-  }) {
-    return AddMediaBtn(
-      access: access,
-      icon: icon,
-      onPressed: onPressed,
+  Widget _buildAddMediaBtn(IconData icon, VoidCallback onPressed,
+      {bool access = true}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: AddMediaBtn(access: access, icon: icon, onPressed: onPressed),
     );
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final file = await controller.imagePickerRepository.pickImage(
-      source: source,
-      imageQuality: 85,
-    );
+    showLoading();
+    final file = await controller.imagePickerRepository
+        .pickImage(source: source, imageQuality: 85);
     if (file != null) {
-      Get.to(() => _proImageEditor(file));
+      double fileSizeInMB = await _getFileSize(File(file.path));
+      if (fileSizeInMB > 10) {
+        Get.back();
+        _showError('error_image_size'.tr);
+      } else {
+        Get.to(() => _proImageEditor(file));
+      }
     }
   }
 
-  Future<void> _pickAndValidateFile(
-    FileType type,
-    String textType, {
-    List<String>? allowedExtensions,
-  }) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: type,
-      allowedExtensions: allowedExtensions,
-      compressionQuality: 85,
-      allowCompression: true,
-    );
-
+  Future<void> _pickAndValidateFile(FileType type, String textType,
+      {List<String>? allowedExtensions}) async {
+    showLoading();
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: type, allowedExtensions: allowedExtensions);
     if (result != null) {
       String? path = result.files.first.path;
-      String fileType = textType;
-
-      if (fileType == "file") {
-        fileType = "file.${path!.split(".").last}";
-      }
-
       if (path != null) {
         File file = File(path);
-
         double fileSizeInMB = await _getFileSize(file);
         controller.fileSize(fileSizeInMB);
-
-        if (fileSizeInMB > 50) {
-          Get.snackbar(
-            "Error",
-            "File size exceeds 50 MB limit.",
-            snackPosition: SnackPosition.BOTTOM,
-          );
+        if (fileSizeInMB > 100) {
+          Get.back();
+          _showError('error_file_size'.tr);
         } else {
           controller.filePath(path);
-          controller.fileType(fileType);
+          controller.fileType(
+              textType == "file" ? "file.${path.split(".").last}" : textType);
         }
       }
     }
@@ -161,13 +119,12 @@ class MediaSelection extends StatelessWidget {
       File(path.path),
       callbacks: ProImageEditorCallbacks(
         onImageEditingComplete: (Uint8List image) async {
-          String imagePath = await _saveImageToFile(image);
-          controller.filePath(imagePath);
+          showLoading();
+          controller.filePath(await _saveImageToFile(image));
           controller.fileType("image");
-        },
-        onCloseEditor: () {
           Get.back();
         },
+        onCloseEditor: () => Get.back(),
       ),
     );
   }
@@ -175,104 +132,60 @@ class MediaSelection extends StatelessWidget {
   Future<String> _saveImageToFile(Uint8List image) async {
     final tempDir = await getTemporaryDirectory();
     final tempPath = "${tempDir.path}/${DateTime.now().toIso8601String()}.jpg";
-    final tempImage = File(tempPath);
-    await tempImage.writeAsBytes(image);
-    return tempImage.path;
+    await File(tempPath).writeAsBytes(image);
+    return tempPath;
   }
 
   Future<double> _getFileSize(File file) async {
-    int fileSizeInBytes = await file.length();
-    double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
-    return fileSizeInMB;
+    return ((await file.length()) / (1024 * 1024));
   }
 
   void _showEmbedDialog() {
     Get.dialog(
       AlertDialog(
         backgroundColor: Get.theme.colorScheme.tertiary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-        title: const Text(
-          "Add embedded link or embed code",
-          style: TextStyle(fontSize: 15),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('dialog_embed_title'.tr, style: TextStyle(fontSize: 15)),
         content: CustomTextFormFeild(
-          label: "Enter link or embed code",
+          label: 'dialog_embed_label'.tr,
           textInputType: TextInputType.text,
-          onChanged: (v) {
-            controller.embedText(v);
-          },
+          onChanged: (v) => controller.embedText(v),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              controller.embedText("");
-              Get.back();
-            },
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: _addEmbed,
-            child: const Text("Add"),
-          ),
+              onPressed: () => Get.back(), child: Text('dialog_cancel'.tr)),
+          TextButton(onPressed: _addEmbed, child: Text('dialog_add'.tr)),
         ],
       ),
     );
   }
 
   void _addEmbed() {
-    if (controller.embedText.value.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Embed text cannot be empty.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
+    String embedText = controller.embedText.value.trim();
+    if (embedText.isEmpty) return _showError('error_embed_empty'.tr);
 
     String? extractedUrl;
-
-    if (controller.embedText.value.contains('<iframe') &&
-        controller.embedText.value.contains('src="')) {
-      final splitText = controller.embedText.value.split('src="');
-      if (splitText.length > 1) {
-        extractedUrl = splitText[1].split('"')[0];
-      }
+    if (embedText.contains('<iframe') && embedText.contains('src="')) {
+      final splitText = embedText.split('src="');
+      if (splitText.length > 1) extractedUrl = splitText[1].split('"')[0];
     } else {
-      extractedUrl = controller.embedText.value;
+      extractedUrl = embedText;
     }
 
-    if (extractedUrl == null ||
-        !RegExp(r'^(http|https):\/\/').hasMatch(extractedUrl)) {
-      Get.snackbar(
-        "Error",
-        "Embed text must contain a valid iframe or HTTP/HTTPS URL.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    if (!Uri.tryParse(extractedUrl)!.isAbsolute) {
-      Get.snackbar(
-        "Error",
-        "Embed text contains an invalid URL.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
+    if (extractedUrl == null || !Uri.tryParse(extractedUrl)!.isAbsolute) {
+      return _showError('error_embed_invalid'.tr);
     }
 
     controller.filePath(extractedUrl);
     controller.fileType("embedded");
-
     controller.embedText("");
     Get.back();
+  }
+
+  void _showError(String message) {
+    Get.snackbar("Error".tr, message,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white);
   }
 }

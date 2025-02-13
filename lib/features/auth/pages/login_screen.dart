@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:socialapp/features/auth/controllers/auth_controller.dart';
 import 'package:socialapp/features/auth/pages/forgot_password_screen.dart';
 import 'package:socialapp/features/auth/pages/register_screen.dart';
-import 'package:socialapp/global/pages/plans.dart';
+import 'package:socialapp/global/pages/global_settings_screen.dart';
 import 'package:socialapp/widgets/custom_secondary_buttom.dart';
 import 'package:socialapp/widgets/custom_text_buttom.dart';
 
@@ -21,6 +21,18 @@ class LoginScreen extends GetView<AuthController> {
     final passController = TextEditingController();
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings_rounded),
+            onPressed: () {
+              Get.toNamed(GlobalSettingsScreen.routeName);
+            },
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -44,12 +56,14 @@ class LoginScreen extends GetView<AuthController> {
                 }, controller.error),
                 const SizedBox(height: 10),
                 CustomTextFormFeild(
+                  textInputType: TextInputType.emailAddress,
                   label: "enter_email".tr,
                   controller: emailController,
                 ),
                 const SizedBox(height: 10),
                 CustomTextFormFeild(
                   label: "enter_password".tr,
+                  textInputType: TextInputType.visiblePassword,
                   controller: passController,
                   obscureText: true,
                 ),

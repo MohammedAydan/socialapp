@@ -1,5 +1,7 @@
 import 'package:app_links/app_links.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:socialapp/core/error/failure.dart';
@@ -32,6 +34,8 @@ class AuthController extends GetxController {
   RxString day = "".obs;
   RxString month = "".obs;
   RxString year = "".obs;
+  RxString gender = "".obs;
+  RxString country = "".obs;
   RxString pass = "".obs;
   RxString repass = "".obs;
 
@@ -40,6 +44,11 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   systemNavigationBarColor: Get.theme.colorScheme.surface,
+    //   systemNavigationBarIconBrightness:
+    //       Get.isDarkMode ? Brightness.light : Brightness.dark,
+    // ));
     AppLifecycleListener(
       onStateChange: (AppLifecycleState state) {
         if (supabase.auth.currentUser != null) {
@@ -107,6 +116,15 @@ class AuthController extends GetxController {
       error("date_fields_cannot_be_empty".tr);
       return;
     }
+    if (gender.isEmpty) {
+      error("gender_is_required".tr);
+      return;
+    }
+    if (country.isEmpty) {
+      error("country_is_required".tr);
+      return;
+    }
+
     try {
       error("");
       showLoading();
@@ -115,10 +133,12 @@ class AuthController extends GetxController {
           fName: fName.value,
           lName: lName.value,
           username: username.value,
-          email: email.value,
+          email: email.value.toLowerCase(),
           day: int.parse(day.value),
           month: int.parse(month.value),
           year: int.parse(year.value),
+          gender: gender.value,
+          country: country.value.toLowerCase(),
           password: pass.value,
           rePassword: repass.value,
         ),
@@ -206,6 +226,14 @@ class AuthController extends GetxController {
   }
 
   Future<void> updateUser(UserModel userModel) async {
+    // validate username
+    if (!UValidator.validateThis(
+      pattern: RegPattern.strict,
+      username: userModel.username ?? "",
+    )) {
+      error("username_is_required".tr);
+      return;
+    }
     try {
       error("");
       showLoading();
@@ -308,7 +336,7 @@ class AuthController extends GetxController {
       try {
         await authRepository.updateUserStatus(isOnline, uid: uid);
       } catch (e) {
-        print("Error updating user status: $e");
+        debugPrint("Error updating user status: $e");
       }
     });
   }
@@ -318,7 +346,7 @@ class AuthController extends GetxController {
   }
 
   void _handleIncomingLinks() {
-    print("Handling incoming links");
+    debugPrint("Handling incoming links");
     appLinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null && uri.hasScheme) {
         _handleDeepLink(uri);
@@ -335,7 +363,7 @@ class AuthController extends GetxController {
           uri.pathSegments.length > 1 ? uri.pathSegments.last : null;
       if (firstSegment == "users" && lastSegment != null) {
         Get.toNamed(UserProfileScreen.routeName, arguments: lastSegment);
-      } else if (firstSegment == "shareing" && lastSegment != null) {
+      } else if (firstSegment == "sharing" && lastSegment != null) {
         Get.toNamed(ShowPostScreen.routeName,
             arguments: int.parse(lastSegment));
       }

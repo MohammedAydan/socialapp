@@ -43,6 +43,10 @@ class AddPostScreen extends GetView<PostsController> {
             }),
             const SizedBox(height: 10),
             MediaSelection(controller: controller),
+            Divider(
+              color: context.theme.colorScheme.surface,
+              thickness: 1,
+            ),
             const SizedBox(height: 20),
             TextFormField(
               onChanged: (v) => controller.titlePost(v),

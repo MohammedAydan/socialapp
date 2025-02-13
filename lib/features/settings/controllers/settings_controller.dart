@@ -45,6 +45,7 @@ class SettingsController extends GetxController {
     } finally {
       update();
       Get.back();
+      Get.back();
     }
   }
 
@@ -55,5 +56,4 @@ class SettingsController extends GetxController {
   bool? isDarkMode() {
     return settingsRepository.isDarkMode();
   }
-  
 }

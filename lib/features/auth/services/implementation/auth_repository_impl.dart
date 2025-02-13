@@ -147,17 +147,33 @@ class AuthRepositoryImpl implements AuthRepository {
     return res.isNotEmpty;
   }
 
+  Future<bool> _checkUsernameNotId(String username, String userId) async {
+    final res = await supabase
+        .from('users_data')
+        .select()
+        .eq('username', username)
+        .neq('user_id', userId)
+        .limit(1);
+
+    return res.isNotEmpty;
+  }
+
   @override
   Future<Either<Failure, UserModel>> updateUser(UserModel user) async {
     try {
+      if (await _checkUsernameNotId(user.username!, user.userId.toString())) {
+        return Left(ServerFailure(error: "username_is_already_exists".tr));
+      }
+
       await supabase.from("users_data").update({
         "first_name": user.firstName,
         "last_name": user.lastName,
+        "username": user.username,
         "phone": user.phone,
         "day": user.day,
         "month": user.month,
         "year": user.year,
-        "location": user.location!.toJson(),
+        // "location": user.location!.toJson(),
       }).eq("user_id", user.userId.toString());
 
       final userData = await _getUser();
