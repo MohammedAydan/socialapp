@@ -18,6 +18,7 @@ class EditProfileScreen extends GetView<AuthController> {
     final dayController = TextEditingController(text: user?.day.toString());
     final monthController = TextEditingController(text: user?.month.toString());
     final yearController = TextEditingController(text: user?.year.toString());
+    final usernameController = TextEditingController(text: user?.username);
 
     return Scaffold(
       appBar: AppBar(
@@ -60,6 +61,11 @@ class EditProfileScreen extends GetView<AuthController> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 20),
+                CustomTextFormFeild(
+                  label: "username".tr,
+                  controller: usernameController,
                 ),
                 const SizedBox(height: 20),
                 CustomTextFormFeild(
@@ -116,12 +122,15 @@ class EditProfileScreen extends GetView<AuthController> {
         ),
         child: CustomPrimaryButton(
           onPressed: () {
+            print("Started update task: validate data");
             if (fNameController.text.isNotEmpty &&
                 lNameController.text.isNotEmpty &&
                 phoneController.text.isNotEmpty &&
                 dayController.text.isNotEmpty &&
                 monthController.text.isNotEmpty &&
-                yearController.text.isNotEmpty) {
+                yearController.text.isNotEmpty &&
+                usernameController.text.isNotEmpty) {
+              print("Started update task: validate data success");
               controller.updateUser(UserModel(
                 userId: user?.userId,
                 firstName: fNameController.text.trim(),
@@ -130,7 +139,11 @@ class EditProfileScreen extends GetView<AuthController> {
                 day: int.parse(dayController.text.trim()),
                 month: int.parse(monthController.text.trim()),
                 year: int.parse(yearController.text.trim()),
+                username: usernameController.text.trim(),
               ));
+              print("Started update task: update user success");
+            } else {
+              print("Started update task: validate data failed");
             }
           },
           text: "save".tr,

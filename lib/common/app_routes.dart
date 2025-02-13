@@ -21,6 +21,7 @@ import 'package:socialapp/features/posts/pages/show_shareings_screen.dart';
 import 'package:socialapp/features/posts/pages/support_app_screen.dart';
 import 'package:socialapp/features/settings/pages/settings_screen.dart';
 import 'package:socialapp/features/user_profile/pages/user_profile_screen.dart';
+import 'package:socialapp/global/pages/global_settings_screen.dart';
 
 List<GetPage> getPages = [
   GetPage(name: SplashScreen.routeName, page: () => const SplashScreen()),
@@ -49,6 +50,9 @@ List<GetPage> getPages = [
   GetPage(name: ProfileScreen.routeName, page: () => ProfileScreen()),
   GetPage(name: UserProfileScreen.routeName, page: () => UserProfileScreen()),
   GetPage(name: SettingsScreen.routeName, page: () => const SettingsScreen()),
+  GetPage(
+      name: GlobalSettingsScreen.routeName,
+      page: () => const GlobalSettingsScreen()),
   GetPage(name: ShowPostScreen.routeName, page: () => ShowPostScreen()),
   GetPage(name: AddPostScreen.routeName, page: () => const AddPostScreen()),
   GetPage(name: SharePostScreen.routeName, page: () => const SharePostScreen()),

@@ -6,6 +6,8 @@ class UserRegisterModel {
   final int day;
   final int month;
   final int year;
+  final String gender;
+  final String country;
   final String password;
   final String rePassword;
 
@@ -17,6 +19,8 @@ class UserRegisterModel {
     required this.day,
     required this.month,
     required this.year,
+    required this.gender,
+    required this.country,
     required this.password,
     required this.rePassword,
   });
@@ -30,6 +34,8 @@ class UserRegisterModel {
       day: int.parse(json["day"]),
       month: int.parse(json["month"]),
       year: int.parse(json["year"]),
+      gender: json["gender"],
+      country: json["country"],
       password: json["password"],
       rePassword: json["rePassword"],
     );
@@ -44,6 +50,8 @@ class UserRegisterModel {
       'day': day.toString(),
       'month': month.toString(),
       'year': year.toString(),
+      'gender': gender,
+      'country': country,
     };
   }
 }

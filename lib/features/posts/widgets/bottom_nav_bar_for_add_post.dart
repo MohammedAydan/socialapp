@@ -26,7 +26,7 @@ class BottomNavBarForAddPost extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Get.theme.colorScheme.surface.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),

@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:socialapp/core/formatNumber/format_number.dart';
 import 'package:socialapp/features/auth/controllers/auth_controller.dart';
 import 'package:socialapp/features/auth/pages/profile_screen.dart';
@@ -13,11 +9,8 @@ import 'package:socialapp/features/notifications/pages/notifications_screen.dart
 import 'package:socialapp/features/posts/controllers/main_layout_controller.dart';
 import 'package:socialapp/features/posts/pages/add_post_screen.dart';
 import 'package:socialapp/features/posts/pages/home_screen.dart';
-import 'package:socialapp/features/posts/pages/support_app_screen.dart';
 import 'package:socialapp/features/posts/pages/videos_screen.dart';
 import 'package:socialapp/features/search/pages/search_screen.dart';
-import 'package:socialapp/local.notifications.dart';
-import 'package:workmanager/workmanager.dart';
 
 class MainLayout extends GetView<MainLayoutController> {
   static const String routeName = "/Main";
@@ -25,7 +18,7 @@ class MainLayout extends GetView<MainLayoutController> {
 
   @override
   Widget build(BuildContext context) {
-    final authController = Get.find<AuthController>();
+    // final authController = Get.find<AuthController>();
     List<Widget> screens = [
       const HomeScreen(),
       SearchScreen(),

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socialapp/features/settings/controllers/settings_controller.dart';
-import 'package:socialapp/widgets/bottom_sheet_account_type.dart';
 import 'package:socialapp/widgets/bottom_sheet_language.dart';
 import 'package:socialapp/widgets/bottom_sheet_theme_mode.dart';
-import 'package:socialapp/widgets/custom_primary_button.dart';
 import 'package:socialapp/widgets/error_card.dart';
 
-class SettingsScreen extends GetView<SettingsController> {
-  static const String routeName = "/Settings";
-  const SettingsScreen({super.key});
+class GlobalSettingsScreen extends GetView<SettingsController> {
+  static const String routeName = "/global_settings";
+  const GlobalSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,36 +59,7 @@ class SettingsScreen extends GetView<SettingsController> {
               title: "light_mode".tr,
               onTap: () => bottomSheetThemeMode(context, controller),
             ),
-            Divider(
-              thickness: 1,
-              color: Get.theme.colorScheme.surface,
-            ),
-            _buildSectionTitle(context, "account_type".tr),
-            Obx(() {
-              return _buildListTile(
-                context,
-                icon: Icons.public_outlined,
-                title: controller.accountType.value == "public"
-                    ? "public_account".tr
-                    : "private_account".tr,
-                onTap: () => bottomSheetAccountType(context, controller),
-              );
-            }),
           ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        height: 90,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-          color: context.theme.colorScheme.tertiary,
-        ),
-        child: CustomPrimaryButton(
-          onPressed: () {
-            controller.authController.signOut();
-          },
-          text: "logout".tr,
         ),
       ),
     );

@@ -18,8 +18,10 @@ class SearchUsersRepositoryImpl implements SearchUsersRepository {
         final finalRes = await supabase
             .from("users_data")
             .select()
-            .like("username", "%$usernameOrEmail%")
-            .like("email", "%$usernameOrEmail%")
+            // .ilike("first_name", "%$usernameOrEmail%")
+            // .ilike("last_name", "%$usernameOrEmail%")
+            .ilike("username", "%$usernameOrEmail%")
+            .ilike("email", "%$usernameOrEmail%")
             .not("user_id", "eq", supabase.auth.currentUser?.id)
             .limit(10);
 

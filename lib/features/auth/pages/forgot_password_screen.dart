@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socialapp/features/auth/controllers/auth_controller.dart';
@@ -41,13 +42,18 @@ class ForgotPasswordScreen extends GetView<AuthController> {
                 const SizedBox(height: 10),
                 CustomTextFormFeild(
                   label: "enter_email".tr,
+                  textInputType: TextInputType.emailAddress,
                   controller: emailController,
                 ),
                 const SizedBox(height: 30),
                 CustomPrimaryButton(
                   text: "send_email".tr,
                   onPressed: () async {
-                    //mohammedaydan12@gmail.com
+                    if (EmailValidator.validate(emailController.text) ==
+                        false) {
+                      controller.error("invalid_email".tr);
+                      return;
+                    }
                     final res = await controller.sendOTP(emailController.text);
                     if (res == true) {
                       Get.toNamed(

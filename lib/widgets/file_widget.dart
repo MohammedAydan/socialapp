@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:socialapp/features/posts/controllers/post_controller.dart';
 import 'package:socialapp/features/posts/models/post_model.dart';
+import 'package:socialapp/global/pages/custom_browser.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class FileWidget extends StatelessWidget {
@@ -31,7 +32,8 @@ class FileWidget extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () async {
-                await launchUrlString(post.mediaUrl!);
+                // await launchUrlString(post.mediaUrl!);
+                Get.to(() => CustomBrowser(url: post.mediaUrl!));
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,

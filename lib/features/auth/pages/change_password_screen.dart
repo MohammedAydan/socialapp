@@ -41,11 +41,13 @@ class ChangePasswordScreen extends GetView<AuthController> {
                 const SizedBox(height: 10),
                 CustomTextFormFeild(
                   label: "enter_password".tr,
+                  textInputType: TextInputType.visiblePassword,
                   controller: passwordController,
                 ),
                 const SizedBox(height: 10),
                 CustomTextFormFeild(
                   label: "enter_re-password".tr,
+                  textInputType: TextInputType.visiblePassword,
                   controller: rePasswordController,
                 ),
                 const SizedBox(height: 30),
